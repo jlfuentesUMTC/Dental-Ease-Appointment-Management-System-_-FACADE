@@ -1,51 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Video Call - DENTAL EASE Clinic')
 
-@push('styles')
-<style>
-    body { background: #0D1B2A; }
-    .video-bg { background: #1a2a3a; }
-    .control-btn {
-        width: 44px; height: 44px;
-        background: rgba(255,255,255,0.12);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.2s;
-        cursor: pointer;
-        border: none;
-        color: white;
-    }
-    .control-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.05); }
-    .control-btn.end { background: #EF4444; }
-    .control-btn.end:hover { background: #DC2626; }
-    .control-btn.active { background: rgba(0,201,200,0.3); }
-    .notes-area { background: #1a2a3a; border: 1px solid rgba(255,255,255,0.1); color: white; resize: none; }
-    .notes-area::placeholder { color: rgba(255,255,255,0.3); }
-    .notes-area:focus { outline: none; border-color: rgba(0,201,200,0.5); }
-</style>
-@endpush
-
-@section('content')
-<div class="min-h-screen flex flex-col" style="background:#0D1B2A;">
-    <!-- Top Bar -->
-    <div class="flex items-center justify-between px-5 py-4">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-teal rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-            </div>
-            <div>
-                <div class="text-white font-semibold text-sm">John Doe</div>
-                <div class="text-gray-400 text-xs">PAT-001 · Regular Checkup Follow-up</div>
-            </div>
-        </div>
-        <div class="flex items-center gap-3">
-            <span class="flex items-center gap-1.5 bg-green-500/20 text-green-400 text-xs font-semibold px-3 py-1.5 rounded-full border border-green-500/30">
-                <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-                Connected
-            </span>
-            <span class="text-gray-400 text-sm font-mono" id="callTimer">00:00</span>
-        </div>
-    </div>
+<div class="min-h-screen flex flex-col bg-navy"></div>
+<div class="... video-bg ... min-h-80"></div>
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col lg:flex-row gap-3 px-4 mb-4" style="min-height:0;">

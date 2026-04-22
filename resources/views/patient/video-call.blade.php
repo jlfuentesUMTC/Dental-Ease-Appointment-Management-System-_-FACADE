@@ -1,26 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Video Call - DENTAL EASE')
 
-@push('styles')
-<style>
-    body { background: #0D1B2A; }
-    .video-bg { background: #1a2a3a; }
-    .control-btn {
-        width: 44px; height: 44px;
-        background: rgba(255,255,255,0.12);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.2s;
-        cursor: pointer;
-        border: none;
-        color: white;
-    }
-    .control-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.05); }
-    .control-btn.end { background: #EF4444; }
-    .control-btn.end:hover { background: #DC2626; }
-    .control-btn.active { background: rgba(0,201,200,0.3); }
-</style>
-@endpush
+<div class="min-h-screen flex flex-col bg-navy"></div>
+<div class="... video-bg ... min-h-80"></div>
 
 @section('content')
 <div class="min-h-screen flex flex-col" style="background:#0D1B2A;">

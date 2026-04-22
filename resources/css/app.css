@@ -6,14 +6,75 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-    
-    /* Branding Colors */
-    --color-dental-primary: #00acc1; /* The main teal */
-    --color-dental-dark: #00838f;
-    --color-dental-light: #e0f7fa;
-    --color-dental-bg: #f8fdfe;
+    --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Syne', sans-serif;
+
+    --color-teal:       #00C9C8;
+    --color-teal-dark:  #00A8A7;
+    --color-teal-light: #E0FAFA;
+    --color-navy:       #0D1B2A;
 }
-.shadow-soft {
-    box-shadow: 0 10px 30px -10px rgba(0, 172, 193, 0.1);
+
+/* ─── Reusable component classes ─── */
+
+@layer components {
+
+    /* Buttons */
+    .btn-teal {
+        @apply bg-teal text-white transition-all duration-200;
+    }
+    .btn-teal:hover {
+        @apply bg-teal-dark -translate-y-px shadow-[0_4px_15px_rgba(0,201,200,0.35)];
+    }
+
+    /* Cards */
+    .card {
+        @apply bg-white rounded-xl shadow-[0_2px_16px_rgba(0,0,0,0.06)];
+    }
+
+    /* Status badges */
+    .status-confirmed { @apply bg-green-100 text-green-700; }
+    .status-pending   { @apply bg-yellow-100 text-yellow-700; }
+    .status-completed { @apply bg-gray-100 text-gray-500; }
+    .status-progress  { @apply bg-blue-100 text-blue-700; }
+
+    /* Fade-in animation */
+    .fade-in {
+        @apply animate-[fadeIn_0.4s_ease_both];
+    }
+
+    /* Thin scrollbar */
+    .scrollbar-thin::-webkit-scrollbar       { width: 4px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded; }
+
+    /* Video call specific */
+    .video-bg    { background: #1a2a3a; }
+    .control-btn {
+        @apply w-11 h-11 rounded-full flex items-center justify-center
+               text-white border-0 cursor-pointer transition-all duration-200;
+        background: rgba(255,255,255,0.12);
+    }
+    .control-btn:hover {
+        background: rgba(255,255,255,0.22);
+        @apply scale-105;
+    }
+    .control-btn.end       { @apply bg-red-500; }
+    .control-btn.end:hover { @apply bg-red-600; }
+    .control-btn.active    { background: rgba(0,201,200,0.3); }
+
+    /* Video call notes textarea */
+    .notes-area {
+        background: #1a2a3a;
+        @apply border border-white/10 text-white resize-none;
+    }
+    .notes-area::placeholder { color: rgba(255,255,255,0.3); }
+    .notes-area:focus {
+        @apply outline-none border-teal/50;
+    }
+}
+
+/* ─── Keyframes ─── */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
