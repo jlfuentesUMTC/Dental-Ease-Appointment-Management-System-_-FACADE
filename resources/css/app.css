@@ -6,6 +6,14 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    
+    /* Branding Colors */
+    --color-dental-primary: #00acc1; /* The main teal */
+    --color-dental-dark: #00838f;
+    --color-dental-light: #e0f7fa;
+    --color-dental-bg: #f8fdfe;
+}
+.shadow-soft {
+    box-shadow: 0 10px 30px -10px rgba(0, 172, 193, 0.1);
 }
