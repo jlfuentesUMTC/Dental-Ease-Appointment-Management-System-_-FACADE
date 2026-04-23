@@ -7,6 +7,8 @@ Route::get('/', fn() => view('landing'))->name('home');
 Route::get('/get-started', fn() => view('get-started'))->name('get-started');
 Route::get('/login', fn() => view('login'))->name('login');
 Route::get('/register', fn() => view('register'))->name('register');
+Route::get('/signup', fn() => view('signup'))->name('signup');
+
 
 // Patient routes
 Route::prefix('patient')->name('patient.')->group(function () {

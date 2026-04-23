@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Login - DENTAL EASE')
+@section('title', 'Sign Up - DENTAL EASE')
 
 @section('content')
 <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
@@ -17,7 +17,7 @@
             </a>
             <div class="hidden md:flex items-center gap-12">
                 <a href="{{ route('get-started') }}" class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-cyan-500 transition-colors font-display">← Back</a>
-                <a href="{{ route('register') }}" class="bg-slate-900 text-white text-xs font-black uppercase tracking-[0.2em] px-8 py-3 rounded-xl hover:bg-cyan-500 transition-all shadow-lg shadow-slate-200 font-display">Sign Up</a>
+                <a href="{{ route('login') }}" class="bg-slate-900 text-white text-xs font-black uppercase tracking-[0.2em] px-8 py-3 rounded-xl hover:bg-cyan-500 transition-all shadow-lg shadow-slate-200 font-display">Log In</a>
             </div>
         </div>
     </div>
@@ -28,12 +28,12 @@
 
     <div class="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-cyan-200/50 rounded-[2.5rem] w-full max-w-md p-8 md:p-10 relative">
         <div class="text-center mb-8">
-            <span class="text-cyan-600 text-[10px] uppercase tracking-[0.3em] font-black">Portal Access</span>
-            <h1 class="font-display text-3xl font-black text-slate-900 mt-2 uppercase tracking-tight">Welcome <span class="text-cyan-500">Back</span></h1>
-            <p class="text-slate-400 text-sm mt-2 font-medium">Log in to manage your peaceful dental experience.</p>
+            <span class="text-cyan-600 text-[10px] uppercase tracking-[0.3em] font-black">Join the platform</span>
+            <h1 class="font-display text-3xl font-black text-slate-900 mt-2 uppercase tracking-tight">Create <span class="text-cyan-500">Account</span></h1>
+            <p class="text-slate-400 text-sm mt-2 font-medium">Join thousands of peaceful smiles today.</p>
         </div>
 
-        <div class="flex bg-slate-100 rounded-2xl p-1.5 mb-8" id="roleToggle">
+        <div class="flex bg-slate-100 rounded-2xl p-1.5 mb-8">
             <button onclick="setRole('patient')" id="tab-patient"
                 class="flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm">
                 Patient
@@ -44,9 +44,21 @@
             </button>
         </div>
 
-        <form id="loginForm" action="#" method="POST" class="space-y-5">
+        <form action="#" method="POST" class="space-y-4">
             @csrf
             <input type="hidden" name="role" id="roleInput" value="patient">
+
+            <div id="nameField">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
+                <input type="text" name="name" placeholder="John Doe"
+                    class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+            </div>
+
+            <div id="clinicNameField" style="display:none">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Clinic Name</label>
+                <input type="text" name="clinic_name" placeholder="Bright Smiles Dental"
+                    class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+            </div>
 
             <div>
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email Address</label>
@@ -55,56 +67,61 @@
             </div>
 
             <div>
-                <div class="flex justify-between items-center mb-1.5 ml-1">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
-                    <a href="#" class="text-[10px] font-black text-cyan-600 uppercase tracking-widest hover:underline">Forgot?</a>
-                </div>
-                <input type="password" name="password" placeholder="••••••••"
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Phone Number</label>
+                <input type="tel" name="phone" placeholder="+1 (555) 123-4567"
                     class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
             </div>
 
-            <div class="flex items-center px-1">
-                <label class="flex items-center gap-3 text-[11px] text-slate-400 cursor-pointer group">
-                    <input type="checkbox" class="accent-cyan-500 w-4 h-4 rounded-lg border-slate-200">
-                    <span class="font-bold uppercase tracking-widest group-hover:text-slate-600 transition-colors">Remember me</span>
-                </label>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
+                    <input type="password" name="password" placeholder="••••••••"
+                        class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Confirm</label>
+                    <input type="password" name="password_confirmation" placeholder="••••••••"
+                        class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+                </div>
             </div>
 
-            <button type="button" id="signInBtn" onclick="handleLogin()"
-                class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl text-sm shadow-xl shadow-cyan-200/50 transition-all hover:-translate-y-1 active:scale-95 font-display tracking-widest uppercase">
-                Log In
+            <label class="flex items-start gap-3 text-[11px] text-slate-400 mb-6 cursor-pointer group">
+                <input type="checkbox" class="accent-cyan-500 w-4 h-4 mt-0.5 rounded-lg border-slate-200">
+                <span class="leading-tight group-hover:text-slate-600 transition-colors">
+                    I agree to the <a href="#" class="text-cyan-600 font-bold hover:underline">Terms</a> and <a href="#" class="text-cyan-600 font-bold hover:underline">Privacy Policy</a>
+                </span>
+            </label>
+
+            <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl text-sm shadow-xl shadow-cyan-200/50 transition-all hover:-translate-y-1 active:scale-95 font-display tracking-widest uppercase">
+                Sign Up Now
             </button>
         </form>
 
         <p class="text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-8">
-            Don't have an account? <a href="{{ route('signup') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Join now</a>
+            Already have an account? <a href="{{ route('login') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Log in in here</a>
         </p>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    let currentRole = 'patient';
     function setRole(role) {
-        currentRole = role;
         document.getElementById('roleInput').value = role;
         const patientTab = document.getElementById('tab-patient');
         const clinicTab = document.getElementById('tab-clinic');
-        
+        const nameField = document.getElementById('nameField');
+        const clinicNameField = document.getElementById('clinicNameField');
+
         if (role === 'patient') {
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
+            nameField.style.display = 'block';
+            clinicNameField.style.display = 'none';
         } else {
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
-        }
-    }
-    
-    function handleLogin() {
-        if (currentRole === 'patient') {
-            window.location.href = '{{ route("patient.dashboard") }}';
-        } else {
-            window.location.href = '{{ route("clinic.dashboard") }}';
+            nameField.style.display = 'none';
+            clinicNameField.style.display = 'block';
         }
     }
 </script>
