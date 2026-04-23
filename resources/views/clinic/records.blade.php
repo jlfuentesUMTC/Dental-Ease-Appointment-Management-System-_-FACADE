@@ -164,6 +164,25 @@
 <script>
     function showAddPatientModal() { document.getElementById('addPatientModal').classList.remove('hidden'); }
     function hideAddPatientModal() { document.getElementById('addPatientModal').classList.add('hidden'); }
+
+    // DIRI ANG SEARCH LOGIC
+    document.getElementById('patientSearch').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        
+        // Filter para sa Desktop Table
+        let rows = document.querySelectorAll('#patientTableBody tr');
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+
+        // Filter para sa Mobile Cards
+        let cards = document.querySelectorAll('.patient-card-mobile');
+        cards.forEach(card => {
+            let text = card.innerText.toLowerCase();
+            card.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
 </script>
 @endpush
 @endsection

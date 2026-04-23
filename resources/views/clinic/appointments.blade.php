@@ -118,6 +118,23 @@
 
 @push('scripts')
 <script>
+    /**
+     * SEARCH LOGIC - Para sa real-time filtering
+     */
+    document.getElementById('patientSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.appointment-card');
+
+        cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            // I-show kung match, i-hide kung dili
+            card.style.display = text.includes(searchTerm) ? "block" : "none";
+        });
+    });
+
+    /**
+     * ORIGINAL SWITCH VIEW LOGIC
+     */
     function switchView(index) {
         const tabs = document.querySelectorAll('[id^="viewTab-"]');
         tabs.forEach((tab, i) => {
