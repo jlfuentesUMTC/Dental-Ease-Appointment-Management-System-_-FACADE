@@ -39,18 +39,54 @@
             
             <div class="h-8 w-[1px] bg-slate-100 mx-1"></div>
 
-            <div class="flex items-center gap-3 cursor-pointer group">
-                <div class="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center text-cyan-400 text-[10px] font-black ring-2 ring-transparent group-hover:ring-cyan-500/20 transition-all shadow-sm">
-                    JD
-                </div>
-                <div class="hidden lg:block text-right">
-                    <div class="text-[10px] font-black text-slate-900 uppercase tracking-tighter leading-none">John Doe</div>
-                    <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">ID: #4092</div>
-                </div>
-                <svg class="w-3.5 h-3.5 text-slate-300 group-hover:text-cyan-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
-                </svg>
+            <div class="relative">
+    <!-- CLICKABLE PROFILE -->
+    <div onclick="toggleDropdown()" class="flex items-center gap-3 cursor-pointer group">
+        <div class="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center text-cyan-400 text-[10px] font-black ring-2 ring-transparent group-hover:ring-cyan-500/20 transition-all shadow-sm">
+            JD
+        </div>
+        <div class="hidden lg:block text-right">
+            <div class="text-[10px] font-black text-slate-900 uppercase tracking-tighter leading-none">
+                John Doe
             </div>
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                ID: #4092
+            </div>
+        </div>
+        <svg class="w-3.5 h-3.5 text-slate-300 group-hover:text-cyan-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/>
+        </svg>
+    </div>
+
+    <!-- DROPDOWN -->
+    <div id="profileDropdown" class="hidden absolute right-0 mt-3 w-44 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden">
+        
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                class="w-full text-left px-4 py-3 text-[11px] font-bold uppercase tracking-widest text-slate-600 hover:bg-red-50 hover:text-red-500 transition">
+                Logout
+            </button>
+        </form>
+
+    </div>
+</div>
         </div>
     </div>
 </nav>
+
+<script>
+function toggleDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('profileDropdown');
+    const isClickInside = event.target.closest('.relative');
+
+    if (!isClickInside) {
+        dropdown.classList.add('hidden');
+    }
+});
+</script>
