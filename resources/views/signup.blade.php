@@ -44,7 +44,7 @@
             </button>
         </div>
 
-        <form action="#" method="POST" class="space-y-4">
+       <form action="{{ route('signup.post') }}" method="POST" class="space-y-4">
             @csrf
             <input type="hidden" name="role" id="roleInput" value="patient">
 
@@ -98,7 +98,7 @@
         </form>
 
         <p class="text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-8">
-            Already have an account? <a href="{{ route('login') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Log in in here</a>
+            Already have an account? <a href="{{ route('login') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Log in here</a>
         </p>
     </div>
 </div>

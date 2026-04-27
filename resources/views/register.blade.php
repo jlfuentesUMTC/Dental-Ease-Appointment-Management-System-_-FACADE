@@ -33,21 +33,22 @@
             <p class="text-slate-400 text-sm mt-2 font-medium">Please provide your details to proceed with booking.</p>
         </div>
 
-        <form action="#" method="POST" class="space-y-4">
-            @csrf
-            <div>
+        <form action="/go-calendar" method="POST">
+          @csrf
+
+            <div class="mb-4">
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Patient Full Name</label>
                 <input type="text" name="name" placeholder="John Doe" required
                     class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
             </div>
 
-            <div>
+            <div class="mb-4">
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Contact Email</label>
                 <input type="email" name="email" placeholder="hello@example.com" required
                     class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
             </div>
 
-            <div>
+            <div class="mb-4">
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Service Type</label>
                 <select name="service" class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium appearance-none">
                     <option value="checkup">General Checkup</option>
@@ -56,14 +57,46 @@
                 </select>
             </div>
 
-            <div class="pb-4">
+            <div class="mb-4">
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Additional Notes (Optional)</label>
                 <textarea name="notes" placeholder="Any specific concerns?" rows="2"
                     class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium resize-none"></textarea>
             </div>
 
+            {{-- ✅ INLINE MINI DATE PICKER --}}
+            <div class="mb-6">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Appointment Date</label>
+                <input type="hidden" name="date" id="selected-date" required>
+
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+                    {{-- Calendar Header --}}
+                    <div class="flex items-center justify-between mb-3">
+                        <button type="button" id="prev-month"
+                            class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-cyan-50 text-slate-400 hover:text-cyan-500 transition-colors text-lg font-bold">‹</button>
+                        <span id="month-label" class="text-sm font-black text-slate-700 uppercase tracking-widest"></span>
+                        <button type="button" id="next-month"
+                            class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-cyan-50 text-slate-400 hover:text-cyan-500 transition-colors text-lg font-bold">›</button>
+                    </div>
+
+                    {{-- Day Headers --}}
+                    <div class="grid grid-cols-7 mb-1">
+                        @foreach(['Su','Mo','Tu','We','Th','Fr','Sa'] as $day)
+                        <div class="text-center text-[9px] font-black text-slate-300 uppercase tracking-wider py-1">{{ $day }}</div>
+                        @endforeach
+                    </div>
+
+                    {{-- Calendar Days --}}
+                    <div id="calendar-days" class="grid grid-cols-7 gap-y-1"></div>
+
+                    {{-- Selected Date Display --}}
+                    <div id="selected-display" class="mt-3 text-center text-[11px] font-bold text-cyan-600 hidden">
+                        ✓ <span id="selected-text"></span>
+                    </div>
+                </div>
+            </div>
+
             <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl text-sm shadow-xl shadow-cyan-200/50 transition-all hover:-translate-y-1 active:scale-95 font-display tracking-widest uppercase">
-                Proceed to Calendar
+                Submit
             </button>
         </form>
 
@@ -72,4 +105,93 @@
         </p>
     </div>
 </div>
+
+<script>
+(function () {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let current = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    const monthNames = ["January","February","March","April","May","June",
+                        "July","August","September","October","November","December"];
+
+    let selectedDate = null;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function renderCalendar() {
+        const label = document.getElementById('month-label');
+        const grid  = document.getElementById('calendar-days');
+
+        label.textContent = monthNames[current.getMonth()] + ' ' + current.getFullYear();
+        grid.innerHTML = '';
+
+        const firstDay = new Date(current.getFullYear(), current.getMonth(), 1).getDay();
+        const daysInMonth = new Date(current.getFullYear(), current.getMonth() + 1, 0).getDate();
+
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            const blank = document.createElement('div');
+            grid.appendChild(blank);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const cellDate = new Date(current.getFullYear(), current.getMonth(), d);
+            const isPast = cellDate < today;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = d;
+
+            const dateStr = current.getFullYear() + '-' + pad(current.getMonth() + 1) + '-' + pad(d);
+            const isSelected = selectedDate === dateStr;
+
+            btn.className = [
+                'w-full aspect-square flex items-center justify-center rounded-lg text-xs font-bold transition-all',
+                isPast
+                    ? 'text-slate-200 cursor-not-allowed'
+                    : isSelected
+                        ? 'bg-cyan-500 text-white shadow-md shadow-cyan-200'
+                        : 'text-slate-600 hover:bg-cyan-50 hover:text-cyan-600 cursor-pointer'
+            ].join(' ');
+
+            if (!isPast) {
+                btn.addEventListener('click', function () {
+                    selectedDate = dateStr;
+                    document.getElementById('selected-date').value = dateStr;
+
+                    const display = document.getElementById('selected-display');
+                    const text    = document.getElementById('selected-text');
+                    display.classList.remove('hidden');
+                    text.textContent = cellDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+                    renderCalendar();
+                });
+            } else {
+                btn.disabled = true;
+            }
+
+            grid.appendChild(btn);
+        }
+    }
+
+    document.getElementById('prev-month').addEventListener('click', function () {
+        const prevMonth = new Date(current.getFullYear(), current.getMonth() - 1, 1);
+        // Don't go before current month
+        if (prevMonth >= new Date(today.getFullYear(), today.getMonth(), 1)) {
+            current = prevMonth;
+            renderCalendar();
+        }
+    });
+
+    document.getElementById('next-month').addEventListener('click', function () {
+        current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+        renderCalendar();
+    });
+
+    renderCalendar();
+})();
+</script>
+
 @endsection
