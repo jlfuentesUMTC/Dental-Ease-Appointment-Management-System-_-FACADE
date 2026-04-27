@@ -56,7 +56,7 @@ Route::prefix('clinic')->name('clinic.')->group(function () {
     Route::get('/video-call', fn() => view('clinic.video-call'))->name('video-call');
 });
 
-Route::get('/services', fn() => view('services'))->name('services');
+Route::get('/story', fn() => view('story'))->name('story');
 Route::get('/pricing', fn() => view('pricing'))->name('pricing');
 Route::get('/contact', fn() => view('contact'))->name('contact');
 Route::get('/learn-more', function () {

@@ -19,9 +19,9 @@
             </a>
 
             <div class="hidden md:flex items-center gap-12">
-                <a href="{{ route('services') }}" class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-cyan-600 transition-colors font-display">Services</a>
-                <a href="{{ route('pricing') }}" class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-cyan-600 transition-colors font-display">Pricing</a>
+                <a href="{{ route('story') }}" class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-cyan-600 transition-colors font-display">Our Story</a>
                 <a href="{{ route('contact') }}" class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-cyan-600 transition-colors font-display">Contact</a>
+                <a href="{{ route('pricing') }}" class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 hover:text-cyan-600 transition-colors font-display">Pricing</a>
             </div>
 
             <div class="md:hidden flex items-center">
@@ -54,7 +54,7 @@
         
         <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
             <a href="{{ route('get-started') }}" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-600 text-white font-black px-12 py-4 rounded-2xl text-lg shadow-2xl shadow-cyan-200/50 transition-all hover:-translate-y-1 active:scale-95 font-display tracking-wide uppercase">
-                Get Started Free
+                Get Started
             </a>
             <a href="#features" class="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-600 font-bold px-12 py-4 rounded-2xl text-lg border border-slate-200 transition-all font-display tracking-wide uppercase">
                 Learn More
@@ -81,8 +81,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             @php
             $features = [
-                ['title'=>'Intelligent Booking','desc'=>'Schedule appointments with millisecond precision and automated conflict resolution.','icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
-                ['title'=>'Smart Notifications','desc'=>'Stay updated with encrypted, real-time alerts regarding your dental care.','icon'=>'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9'],
+                ['title'=>'Intelligent Booking','desc'=>'Schedule appointments with precision and conflict resolution.','icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                ['title'=>'Smart Notifications','desc'=>'Stay updated with encrypted, alerts regarding your dental care.','icon'=>'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9'],
                 ['title'=>'Cloud Records','desc'=>'Your medical history is secured with clinical-grade encryption and 24/7 access.','icon'=>'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
                 ['title'=>'HD Consultations','desc'=>'Connect with professionals via high-definition, secure video channels.','icon'=>'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'],
                 ['title'=>'Privacy Architecture','desc'=>'Built on a zero-trust model to ensure your health data remains yours alone.','icon'=>'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
