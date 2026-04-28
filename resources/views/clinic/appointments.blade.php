@@ -19,7 +19,7 @@
         <div class="bg-white border-2 border-slate-100 rounded-2xl p-1.5 mb-4 shadow-sm flex flex-col lg:flex-row items-stretch gap-2">
             <div class="flex-1 flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-xl border border-transparent focus-within:border-cyan-500/50 transition-all">
                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" placeholder="SEARCH PATIENTS..." class="bg-transparent outline-none text-[10px] font-black uppercase tracking-widest text-slate-900 placeholder-slate-300 w-full">
+                <input type="text" id="searchInput" oninput="filterAppointments(this.value)" placeholder="SEARCH PATIENTS..." class="bg-transparent outline-none text-[10px] font-black uppercase tracking-widest text-slate-900 placeholder-slate-300 w-full">
             </div>
             
             <div class="flex bg-slate-50 p-1 rounded-xl gap-1">
@@ -62,7 +62,7 @@
             ];
             @endphp
             @foreach($apts as $apt)
-            <div class="bg-white border border-slate-100 rounded-2xl p-4 hover:border-cyan-200 transition-all group">
+            <div class="bg-white border border-slate-100 rounded-2xl p-4 hover:border-cyan-200 transition-all group" data-title="{{ strtolower($apt['name']) }}">
                 <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div class="flex items-center gap-4 flex-1">
                         <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center text-cyan-400 font-black text-lg flex-shrink-0 group-hover:bg-cyan-500 group-hover:text-white transition-colors">
@@ -143,6 +143,13 @@
                 : 'text-slate-400 hover:text-slate-600 text-[9px] font-black uppercase tracking-widest px-5 py-2 rounded-lg transition-all whitespace-nowrap';
         });
     }
+
+    function filterAppointments(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('[data-title]').forEach(card => {
+        card.style.display = card.dataset.title.includes(q) ? '' : 'none';
+    });
+}
 </script>
 @endpush
 @endsection

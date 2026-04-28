@@ -42,7 +42,7 @@
         <div class="bg-white border-2 border-slate-100 rounded-2xl p-1.5 mb-6 shadow-sm flex flex-col lg:flex-row items-stretch gap-2">
             <div class="flex-1 flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-xl border border-transparent focus-within:border-cyan-500/50 transition-all">
                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" placeholder="SEARCH BY NAME, ID, OR CONTACT..." class="bg-transparent outline-none text-[10px] font-black uppercase tracking-widest text-slate-900 placeholder-slate-300 w-full">
+                <input type="text" oninput="filterAppointments(this.value)" placeholder="SEARCH BY NAME, ID, OR CONTACT..." class="bg-transparent outline-none text-[10px] font-black uppercase tracking-widest text-slate-900 placeholder-slate-300 w-full">
             </div>
             
             <div class="flex bg-slate-50 p-1 rounded-xl gap-1">
@@ -95,7 +95,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-50">
                         @foreach($patients as $p)
-                        <tr class="hover:bg-cyan-50/30 transition-colors group">
+                        <tr class="hover:bg-cyan-50/30 transition-colors group" data-title="{{ strtolower($p['name'] . ' ' . $p['id'] . ' ' . $p['email'] . ' ' . $p['phone']) }}">
                             <td class="px-6 py-4">
                                 <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-md">{{ $p['id'] }}</span>
                             </td>
@@ -183,6 +183,13 @@
             card.style.display = text.includes(filter) ? '' : 'none';
         });
     });
+
+    function filterAppointments(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('[data-title]').forEach(card => {
+        card.style.display = card.dataset.title.includes(q) ? '' : 'none';
+    });
+}
 </script>
 @endpush
 @endsection
