@@ -27,8 +27,6 @@
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from)_0%,_transparent_70%)] from-cyan-100/40 to-transparent -z-10"></div>
 
     <div class="bg-white/70 backdrop-blur-xl border border-white shadow-2xl shadow-cyan-200/50 rounded-[2.5rem] w-full max-w-md p-8 md:p-10 text-center">
-
-        {{-- Success Icon --}}
         <div class="w-20 h-20 bg-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-cyan-200">
             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
@@ -40,43 +38,42 @@
             You're <span class="text-cyan-500">All Set!</span>
         </h1>
         <p class="text-slate-400 text-sm mt-3 font-medium leading-relaxed">
-            Your appointment request has been submitted. The clinic will confirm your schedule shortly.
+            Your appointment request has been saved. The clinic will confirm your schedule shortly.
         </p>
 
-        {{-- Appointment Summary --}}
-        @php $appt = session('appointment'); @endphp
-        @if($appt)
+        @if($appointment)
         <div class="mt-6 bg-slate-50 border border-slate-100 rounded-2xl p-5 text-left space-y-3">
             <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2">Appointment Summary</p>
 
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center gap-4">
                 <span class="text-xs text-slate-400 font-semibold">Name</span>
-                <span class="text-xs text-slate-700 font-black">{{ $appt['name'] ?? '—' }}</span>
+                <span class="text-xs text-slate-700 font-black text-right">{{ $appointment->patient_name }}</span>
             </div>
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center gap-4">
                 <span class="text-xs text-slate-400 font-semibold">Email</span>
-                <span class="text-xs text-slate-700 font-black">{{ $appt['email'] ?? '—' }}</span>
+                <span class="text-xs text-slate-700 font-black text-right">{{ $appointment->patient_email }}</span>
             </div>
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center gap-4">
+                <span class="text-xs text-slate-400 font-semibold">Clinic</span>
+                <span class="text-xs text-slate-700 font-black text-right">{{ $appointment->clinic_name }}</span>
+            </div>
+            <div class="flex justify-between items-center gap-4">
                 <span class="text-xs text-slate-400 font-semibold">Service</span>
-                <span class="text-xs text-slate-700 font-black capitalize">{{ str_replace('-', ' ', $appt['service'] ?? '—') }}</span>
+                <span class="text-xs text-slate-700 font-black text-right capitalize">{{ str_replace('-', ' ', $appointment->service) }}</span>
             </div>
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center gap-4">
                 <span class="text-xs text-slate-400 font-semibold">Date</span>
-                <span class="text-xs text-slate-700 font-black">
-                    {{ isset($appt['date']) ? \Carbon\Carbon::parse($appt['date'])->format('F j, Y') : '—' }}
-                </span>
+                <span class="text-xs text-slate-700 font-black text-right">{{ $appointment->appointment_date->format('F j, Y') }}</span>
             </div>
-            @if(!empty($appt['notes']))
+            @if($appointment->notes)
             <div class="pt-2 border-t border-slate-100">
                 <span class="text-xs text-slate-400 font-semibold block mb-1">Notes</span>
-                <span class="text-xs text-slate-600 font-medium">{{ $appt['notes'] }}</span>
+                <span class="text-xs text-slate-600 font-medium">{{ $appointment->notes }}</span>
             </div>
             @endif
         </div>
         @endif
 
-        {{-- CTA: nudge guest to create an account --}}
         <div class="mt-8 bg-cyan-50 border border-cyan-100 rounded-2xl p-5">
             <p class="text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Want to track your appointment?</p>
             <p class="text-[11px] text-slate-400 font-medium mb-4">Create a free account to monitor your booking status, view checkup history, and get reminders.</p>
@@ -87,7 +84,6 @@
                 Back to Home
             </a>
         </div>
-
     </div>
 </div>
 @endsection

@@ -21,6 +21,7 @@ class AuthController extends Controller
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required',
+            'role'     => 'required|in:patient,clinic',
         ]);
 
         $credentials = $request->only('email', 'password');
@@ -30,6 +31,14 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+
+            if ($user->role !== $request->role) {
+                Auth::logout();
+
+                return back()->withErrors([
+                    'email' => 'This account is not registered for the selected portal.'
+                ])->withInput();
+            }
 
             if ($user->role === 'clinic') {
                 return redirect()->route('clinic.dashboard');
@@ -53,7 +62,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
+            'name'     => 'required_if:role,patient|nullable|string|max:255',
+            'clinic_name' => 'required_if:role,clinic|nullable|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'phone'    => 'nullable|string|max:20',
             'password' => 'required|confirmed|min:6',
@@ -61,7 +71,7 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
+            'name'     => $request->role === 'clinic' ? $request->clinic_name : $request->name,
             'email'    => $request->email,
             'phone'    => $request->phone,
             'password' => Hash::make($request->password),

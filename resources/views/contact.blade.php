@@ -91,21 +91,31 @@
 
             <div class="bg-white rounded-[2rem] p-8 sm:p-10 shadow-xl shadow-slate-200/40 border border-slate-100">
                 <h3 class="font-display font-black text-slate-800 uppercase tracking-tight text-xl mb-8">Direct Inquiry</h3>
-                <form action="#" method="POST" class="space-y-5">
+                @if(session('status'))
+                <div class="mb-5 bg-cyan-50 border border-cyan-100 text-cyan-700 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest">
+                    {{ session('status') }}
+                </div>
+                @endif
+
+                @if($errors->any())
+                <div class="mb-5 bg-red-50 border border-red-100 text-red-500 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest">
+                    {{ $errors->first() }}
+                </div>
+                @endif
+
+                <form action="{{ route('contact.store') }}" method="POST" class="space-y-5">
                     @csrf
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Pseudonym</label>
-                            <input type="text" placeholder="Dev_User" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors">
+                            <input type="text" name="name" value="{{ old('name', Auth::user()?->name) }}" required placeholder="Dev_User" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors">
                         </div>
                         <div>
                             <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Topic</label>
-                            <select class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors bg-white">
-                                <option>Bug Report</option>
-                                <option>Feature Request</option>
-                                <option>API Access</option>
-                                <option>UI/UX Feedback</option>
-                                <option>Partnership</option>
+                            <select name="topic" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors bg-white">
+                                @foreach(['Bug Report','Feature Request','API Access','UI/UX Feedback','Partnership','Clinic Concern','Other'] as $topic)
+                                <option value="{{ $topic }}" @selected(old('topic') === $topic)>{{ $topic }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -113,17 +123,17 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Email Address</label>
-                            <input type="email" placeholder="dev@example.com" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors">
+                            <input type="email" name="email" value="{{ old('email', Auth::user()?->email) }}" required placeholder="dev@example.com" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors">
                         </div>
                         <div>
                             <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Phone Number</label>
-                            <input type="tel" placeholder="+63 9xx xxx xxxx" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors">
+                            <input type="tel" name="phone" value="{{ old('phone', Auth::user()?->phone) }}" placeholder="+63 9xx xxx xxxx" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Details</label>
-                        <textarea rows="4" placeholder="Describe the technical issue or proposal..." class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors resize-none"></textarea>
+                        <textarea rows="4" name="message" required placeholder="Describe the technical issue or proposal..." class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-700 text-sm font-medium focus:outline-none focus:border-cyan-400 transition-colors resize-none">{{ old('message') }}</textarea>
                     </div>
                     <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black uppercase tracking-wide py-4 rounded-xl shadow-lg shadow-cyan-200/50 transition-all hover:-translate-y-0.5 active:scale-95 font-display">
                         Push Message

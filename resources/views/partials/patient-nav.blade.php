@@ -1,3 +1,13 @@
+@php
+    $user = Auth::user();
+    $name = $user?->name ?? 'Patient';
+    $initials = collect(explode(' ', trim($name)))
+        ->filter()
+        ->map(fn($part) => strtoupper(substr($part, 0, 1)))
+        ->take(2)
+        ->implode('');
+@endphp
+
 <nav class="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         
@@ -43,14 +53,14 @@
     <!-- CLICKABLE PROFILE -->
     <div onclick="toggleDropdown()" class="flex items-center gap-3 cursor-pointer group">
         <div class="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center text-cyan-400 text-[10px] font-black ring-2 ring-transparent group-hover:ring-cyan-500/20 transition-all shadow-sm">
-            JD
+            {{ $initials ?: 'PT' }}
         </div>
         <div class="hidden lg:block text-right">
             <div class="text-[10px] font-black text-slate-900 uppercase tracking-tighter leading-none">
-                John Doe
+                {{ $name }}
             </div>
             <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                ID: #4092
+                ID: #{{ str_pad((string) ($user?->id ?? 0), 4, '0', STR_PAD_LEFT) }}
             </div>
         </div>
         <svg class="w-3.5 h-3.5 text-slate-300 group-hover:text-cyan-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
