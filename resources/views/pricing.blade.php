@@ -72,7 +72,40 @@
         ];
         @endphp
 
+        @isset($registeredClinics)
+            @php
+                $clinics = $registeredClinics->map(function ($clinic) {
+                    $services = collect($clinic->clinic_services ?: [
+                        ['name' => 'General Checkup', 'price' => 'Contact clinic'],
+                        ['name' => 'Cleaning', 'price' => 'Contact clinic'],
+                        ['name' => 'Consultation', 'price' => 'Contact clinic'],
+                    ])->map(fn ($service) => [
+                        'name' => $service['name'] ?? 'Dental Service',
+                        'price' => $service['price'] ?? 'Contact clinic',
+                    ])->values()->all();
+
+                    return [
+                        'name' => $clinic->name,
+                        'location' => $clinic->clinic_location ?: 'Clinic location not provided',
+                        'landmark' => 'Registered Dental Ease clinic',
+                        'phone' => $clinic->phone ?: 'Contact number not provided',
+                        'hours' => $clinic->clinic_hours ?: 'Clinic hours not provided',
+                        'experience' => 'Registered',
+                        'rating' => '5.0',
+                        'tags' => ['Registered Clinic', 'Dental Ease Partner', 'Accepts Bookings'],
+                        'image' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=200',
+                        'services' => $services,
+                    ];
+                })->values()->all();
+            @endphp
+        @endisset
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            @if(empty($clinics))
+            <div class="lg:col-span-2 bg-white border border-slate-100 rounded-3xl p-10 text-center">
+                <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400">No registered clinics yet.</p>
+            </div>
+            @endif
             @foreach($clinics as $clinic)
             <div class="group relative bg-white border border-slate-200 rounded-[3rem] overflow-hidden hover:shadow-2xl hover:shadow-cyan-200/40 transition-all duration-500 min-h-[550px] flex flex-col">
                 

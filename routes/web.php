@@ -5,13 +5,21 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\NotificationController;
 
 // PUBLIC ROUTES
 Route::get('/', fn() => view('landing'))->name('home');
 Route::get('/get-started', fn() => view('get-started'))->name('get-started');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::get('/register', function () {
+    $clinics = \App\Models\User::query()
+        ->where('role', 'clinic')
+        ->orderBy('name')
+        ->get(['id', 'name', 'clinic_services']);
+
+    return view('register', compact('clinics'));
+})->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 // ==============================================================================
@@ -46,6 +54,10 @@ Route::post('/logout', function () {
     request()->session()->regenerateToken();
     return redirect('/login');
 })->name('logout');
+
+Route::post('/notifications/read', [NotificationController::class, 'markAllRead'])
+    ->middleware('auth')
+    ->name('notifications.read');
 
 // GUEST APPOINTMENT BOOKING
 Route::post('/go-calendar', [AppointmentController::class, 'storeGuest'])->name('appointments.guest.store');
@@ -105,6 +117,7 @@ Route::prefix('clinic')->name('clinic.')->middleware('auth')->group(function () 
     })->name('dashboard');
     Route::get('/appointments', [AppointmentController::class, 'clinicIndex'])->name('appointments');
     Route::patch('/appointments/{appointment}/approve', [AppointmentController::class, 'approve'])->name('appointments.approve');
+    Route::patch('/appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
     Route::get('/records', function () {
         $clinic = Auth::user();
         $appointments = \App\Models\Appointment::query()
@@ -125,7 +138,14 @@ Route::prefix('clinic')->name('clinic.')->middleware('auth')->group(function () 
 
 // OTHER PUBLIC PAGES
 Route::get('/story', fn() => view('story'))->name('story');
-Route::get('/pricing', fn() => view('pricing'))->name('pricing');
+Route::get('/pricing', function () {
+    $registeredClinics = \App\Models\User::query()
+        ->where('role', 'clinic')
+        ->orderBy('name')
+        ->get();
+
+    return view('pricing', compact('registeredClinics'));
+})->name('pricing');
 Route::get('/contact', fn() => view('contact'))->name('contact');
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
 Route::get('/learn-more', function () {

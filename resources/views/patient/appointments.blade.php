@@ -77,6 +77,7 @@
                         <span class="text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg
                             {{ $apt->status == 'completed' ? 'bg-slate-900 text-white' : '' }}
                             {{ $apt->status == 'confirmed' ? 'bg-cyan-50 text-cyan-600' : '' }}
+                            {{ $apt->status == 'declined' ? 'bg-red-50 text-red-500' : '' }}
                             {{ $apt->status == 'pending' ? 'bg-slate-100 text-slate-400' : '' }}">
                             {{ ucfirst($apt->status) }}
                         </span>

@@ -83,6 +83,13 @@
                                 Start Call
                             </a>
                         @elseif($apt->status === 'pending')
+                            <form action="{{ route('clinic.appointments.decline', $apt) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <button class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all">
+                                    Decline
+                                </button>
+                            </form>
                             <form action="{{ route('clinic.appointments.approve', $apt) }}" method="POST">
                                 @csrf
                                 @method('PATCH')

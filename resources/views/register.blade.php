@@ -59,12 +59,13 @@
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Select Clinic</label>
                     <div class="relative">
-                        <select name="clinic" required class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium appearance-none">
+                        <select name="clinic_id" required class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium appearance-none">
                             <option value="" disabled selected>Choose Clinic</option>
-                            <option value="smile-central">Smile Central</option>
-                            <option value="elite-care">Elite Care</option>
-                            <option value="white-pearly">White Pearly</option>
+                            @foreach($clinics ?? [] as $clinic)
+                            <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
+                            @endforeach
                         </select>
+                        <input type="hidden" name="clinic" value="registered-clinic">
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>

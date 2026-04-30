@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\AppNotification;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,7 +57,18 @@ class AppointmentController extends Controller
 
     public function storePatient(Request $request): RedirectResponse
     {
-        $this->createAppointment($request);
+        $appointment = $this->createAppointment($request);
+
+        if ($appointment->patient_id) {
+            AppNotification::create([
+                'user_id' => $appointment->patient_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_submitted',
+                'title' => 'Appointment submitted',
+                'body' => "Your {$appointment->service} request at {$appointment->clinic_name} is waiting for approval.",
+                'message' => "Your {$appointment->service} request at {$appointment->clinic_name} is waiting for approval.",
+            ]);
+        }
 
         return redirect()
             ->route('patient.appointments')
@@ -67,7 +79,36 @@ class AppointmentController extends Controller
     {
         $appointment->update(['status' => 'confirmed']);
 
+        if ($appointment->patient_id) {
+            AppNotification::create([
+                'user_id' => $appointment->patient_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_confirmed',
+                'title' => 'Appointment approved',
+                'body' => "Your {$appointment->service} appointment at {$appointment->clinic_name} has been approved.",
+                'message' => "Your {$appointment->service} appointment at {$appointment->clinic_name} has been approved.",
+            ]);
+        }
+
         return back()->with('status', 'Appointment approved.');
+    }
+
+    public function decline(Appointment $appointment): RedirectResponse
+    {
+        $appointment->update(['status' => 'declined']);
+
+        if ($appointment->patient_id) {
+            AppNotification::create([
+                'user_id' => $appointment->patient_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_declined',
+                'title' => 'Appointment declined',
+                'body' => "Your {$appointment->service} request at {$appointment->clinic_name} was declined. Please choose another available schedule.",
+                'message' => "Your {$appointment->service} request at {$appointment->clinic_name} was declined. Please choose another available schedule.",
+            ]);
+        }
+
+        return back()->with('status', 'Appointment declined.');
     }
 
     private function createAppointment(Request $request): Appointment
@@ -90,8 +131,9 @@ class AppointmentController extends Controller
             ? User::query()->where('role', 'clinic')->find($validated['clinic_id'])
             : null;
 
-        return Appointment::create([
+        $appointment = Appointment::create([
             'doctor_id' => null,
+            'clinic_id' => $clinic?->id,
             'patient_id' => $user?->id,
             'patient_name' => $validated['name'] ?? $user?->name ?? 'Guest Patient',
             'patient_email' => $validated['email'] ?? $user?->email ?? 'guest@example.com',
@@ -104,6 +146,19 @@ class AppointmentController extends Controller
             'status' => 'pending',
             'notes' => $validated['notes'] ?? null,
         ]);
+
+        if ($appointment->clinic_id) {
+            AppNotification::create([
+                'user_id' => $appointment->clinic_id,
+                'appointment_id' => $appointment->id,
+                'type' => 'appointment_request',
+                'title' => 'New appointment request',
+                'body' => "{$appointment->patient_name} requested {$appointment->service} on {$appointment->appointment_date->format('M j, Y')}.",
+                'message' => "{$appointment->patient_name} requested {$appointment->service} on {$appointment->appointment_date->format('M j, Y')}.",
+            ]);
+        }
+
+        return $appointment;
     }
 
     private function clinicLabel(string $clinic): string

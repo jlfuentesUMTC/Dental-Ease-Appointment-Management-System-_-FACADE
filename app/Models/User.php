@@ -23,18 +23,22 @@ class User extends Authenticatable
      * @return array<string, string>
      */
 
-    protected $fillable = [
+protected $fillable = [
     'name',
     'email',
     'phone',
     'password',
-    'role'
+    'role',
+    'clinic_location',
+    'clinic_hours',
+    'clinic_services',
 ];
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'clinic_services' => 'array',
         ];
     }
 }

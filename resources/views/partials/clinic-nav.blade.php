@@ -1,6 +1,12 @@
 @php
     $user = Auth::user();
     $clinicName = $user?->name ?? 'Clinic';
+    $notifications = \App\Models\AppNotification::query()
+        ->where('user_id', $user?->id)
+        ->latest()
+        ->limit(5)
+        ->get();
+    $unreadCount = $notifications->whereNull('read_at')->count();
 @endphp
 
 <nav class="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50">
@@ -37,10 +43,36 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <button class="relative p-2 text-slate-400 hover:text-cyan-500 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+            <details class="relative group">
+                <summary class="list-none cursor-pointer relative p-2 text-slate-400 hover:text-cyan-500 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    @if($unreadCount > 0)
+                    <span class="absolute top-1 right-1 min-w-4 h-4 px-1 bg-red-500 text-white text-[8px] font-black rounded-full border-2 border-white flex items-center justify-center">{{ $unreadCount }}</span>
+                    @endif
+                </summary>
+                <div class="absolute right-0 mt-3 w-80 max-w-[calc(100vw-2rem)] bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden z-50">
+                    <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-900">Notifications</span>
+                        @if($unreadCount > 0)
+                        <form method="POST" action="{{ route('notifications.read') }}">
+                            @csrf
+                            <button class="text-[9px] font-black uppercase tracking-widest text-cyan-600">Mark read</button>
+                        </form>
+                        @endif
+                    </div>
+                    <div class="max-h-80 overflow-y-auto">
+                        @forelse($notifications as $notification)
+                        <div class="px-4 py-3 border-b border-slate-50 {{ $notification->read_at ? 'bg-white' : 'bg-cyan-50/60' }}">
+                            <div class="text-[10px] font-black uppercase tracking-widest text-slate-900">{{ $notification->title }}</div>
+                            <div class="text-xs text-slate-500 font-semibold mt-1 leading-snug">{{ $notification->message }}</div>
+                            <div class="text-[9px] text-slate-300 font-black uppercase tracking-widest mt-2">{{ $notification->created_at->diffForHumans() }}</div>
+                        </div>
+                        @empty
+                        <div class="px-4 py-8 text-center text-[10px] font-black uppercase tracking-widest text-slate-300">No notifications</div>
+                        @endforelse
+                    </div>
+                </div>
+            </details>
 
             <div class="h-8 w-[1px] bg-slate-100 mx-1"></div>
 
