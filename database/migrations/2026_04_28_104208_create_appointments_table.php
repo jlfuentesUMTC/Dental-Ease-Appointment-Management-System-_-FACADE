@@ -13,8 +13,11 @@ return new class extends Migration
     {
         if (Schema::hasTable('appointments')) {
             Schema::table('appointments', function (Blueprint $table) {
+                if (!Schema::hasColumn('appointments', 'doctor_id')) {
+                    $table->foreignId('doctor_id')->nullable()->after('id')->constrained('users')->nullOnDelete();
+                }
                 if (!Schema::hasColumn('appointments', 'patient_id')) {
-                    $table->foreignId('patient_id')->nullable()->after('id')->constrained('users')->nullOnDelete();
+                    $table->foreignId('patient_id')->nullable()->after('doctor_id')->constrained('users')->nullOnDelete();
                 }
                 if (!Schema::hasColumn('appointments', 'patient_name')) {
                     $table->string('patient_name')->after('patient_id');
@@ -53,6 +56,7 @@ return new class extends Migration
 
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('doctor_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('patient_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('patient_name');
             $table->string('patient_email');

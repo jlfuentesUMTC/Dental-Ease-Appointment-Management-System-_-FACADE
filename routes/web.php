@@ -6,7 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ContactMessageController;
 
-// Public routes
+// PUBLIC ROUTES
 Route::get('/', fn() => view('landing'))->name('home');
 Route::get('/get-started', fn() => view('get-started'))->name('get-started');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -14,7 +14,29 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
-// Signup routes
+// ==============================================================================
+// OTP PASSWORD RESET ROUTES (UPDATED TO OTP FLOW)
+// ==============================================================================
+
+// 1. LOADS THE FORGOT PASSWORD PAGE (WHERE USER ENTERS EMAIL)
+Route::get('/forgot-password', function() {
+    return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+
+// 2. TRIGGER SENDING THE 6-DIGIT OTP CODE TO GMAIL
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('guest')->name('password.email');
+
+// 3. LOADS THE PAGE TO ENTER THE OTP CODE AND NEW PASSWORD
+Route::get('/reset-password', function() {
+    return view('auth.reset-password');
+})->middleware('guest')->name('password.reset');
+
+// 4. SAVES THE NEW PASSWORD AFTER VERIFYING THE OTP CODE
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest')->name('password.update');
+
+// ==============================================================================
+
+// SIGNUP ROUTES
 Route::get('/signup', fn() => view('signup'))->name('signup');
 Route::post('/signup', [AuthController::class, 'register'])->name('signup.post');
 
@@ -25,10 +47,10 @@ Route::post('/logout', function () {
     return redirect('/login');
 })->name('logout');
 
-// GUEST APPOINTMENT BOOKING — no account required
+// GUEST APPOINTMENT BOOKING
 Route::post('/go-calendar', [AppointmentController::class, 'storeGuest'])->name('appointments.guest.store');
 
-// Booking confirmation page (guest-accessible, no login needed)
+// BOOKING CONFIRMATION
 Route::get('/booking-confirmation', function () {
     $appointment = session('appointment_id')
         ? \App\Models\Appointment::find(session('appointment_id'))
@@ -41,7 +63,7 @@ Route::get('/booking-confirmation', function () {
     return view('booking-confirmation', compact('appointment'));
 })->name('booking.confirmation');
 
-// Patient routes (requires login)
+// PATIENT ROUTES (PROTECTED BY AUTH)
 Route::prefix('patient')->name('patient.')->middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         $appointments = \App\Models\Appointment::query()
@@ -64,7 +86,7 @@ Route::prefix('patient')->name('patient.')->middleware('auth')->group(function (
     Route::get('/video-call', fn() => view('patient.video-call'))->name('video-call');
 });
 
-// Clinic routes (requires login)
+// CLINIC ROUTES (PROTECTED BY AUTH)
 Route::prefix('clinic')->name('clinic.')->middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         $clinic = Auth::user();
@@ -101,6 +123,7 @@ Route::prefix('clinic')->name('clinic.')->middleware('auth')->group(function () 
     Route::get('/video-call', fn() => view('clinic.video-call'))->name('video-call');
 });
 
+// OTHER PUBLIC PAGES
 Route::get('/story', fn() => view('story'))->name('story');
 Route::get('/pricing', fn() => view('pricing'))->name('pricing');
 Route::get('/contact', fn() => view('contact'))->name('contact');

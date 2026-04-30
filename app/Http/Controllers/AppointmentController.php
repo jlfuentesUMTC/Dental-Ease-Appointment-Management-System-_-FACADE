@@ -92,7 +92,6 @@ class AppointmentController extends Controller
 
         return Appointment::create([
             'doctor_id' => null,
-            'clinic_id' => $clinic?->id,
             'patient_id' => $user?->id,
             'patient_name' => $validated['name'] ?? $user?->name ?? 'Guest Patient',
             'patient_email' => $validated['email'] ?? $user?->email ?? 'guest@example.com',

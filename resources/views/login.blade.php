@@ -48,53 +48,145 @@
             @csrf
             <input type="hidden" name="role" id="roleInput" value="patient">
 
+            {{-- EMAIL SECTION --}}
             <div>
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email Address</label>
-                <input type="email" name="email" value="{{ old('email') }}" placeholder="your@email.com" required
-                    class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+                <input type="email" id="emailInput" name="email" value="{{ old('email') }}" placeholder="your@email.com" required
+                    class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium text-slate-900 @error('email') border-red-500 @enderror">
+                
+                {{-- KANI ANG MO DISPLAY SA ERROR MESSAGE GIKAN SA CONTROLLER --}}
+                @error('email')
+                    <p class="text-[9px] font-black uppercase mt-2 ml-1 text-red-500 italic tracking-widest">{{ $message }}</p>
+                @enderror
+                
+                <p id="emailError" class="text-[9px] font-bold uppercase mt-2 ml-1 text-red-500 hidden italic">Invalid email format (e.g. name@gmail.com)</p>
             </div>
 
+            {{-- PASSWORD SECTION --}}
             <div>
-                <div class="flex justify-between items-center mb-1.5 ml-1">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
-                    <a href="#" class="text-[10px] font-black text-cyan-600 uppercase tracking-widest hover:underline">Forgot?</a>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
+                <div class="relative">
+                    <input type="password" id="passwordInput" name="password" placeholder="••••••••" required
+                        class="w-full bg-white border border-slate-100 rounded-xl pl-4 pr-12 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium text-slate-900 @error('password') border-red-500 @enderror">
+                    <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-500 transition-colors">
+                        <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </button>
                 </div>
-                <input type="password" name="password" placeholder="Password" required
-                    class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+
+                {{-- KANI ANG MO DISPLAY SA WRONG PASSWORD MESSAGE --}}
+                @error('password')
+                    <p class="text-[9px] font-black uppercase mt-2 ml-1 text-red-500 italic tracking-widest">{{ $message }}</p>
+                @enderror
+
+                <p id="passError" class="text-[9px] font-bold uppercase mt-2 ml-1 hidden italic"></p>
             </div>
 
-            @if($errors->any())
-            <div class="bg-red-50 border border-red-100 text-red-500 rounded-xl px-4 py-3 text-[10px] font-black uppercase tracking-widest">
-                {{ $errors->first() }}
-            </div>
-            @endif
-
-            <div class="flex items-center px-1">
+            <div class="flex items-center justify-between px-1">
                 <label class="flex items-center gap-3 text-[11px] text-slate-400 cursor-pointer group">
                     <input type="checkbox" name="remember" class="accent-cyan-500 w-4 h-4 rounded-lg border-slate-200">
                     <span class="font-bold uppercase tracking-widest group-hover:text-slate-600 transition-colors">Remember me</span>
                 </label>
+               <a href="{{ route('password.request') }}" class="text-[10px] font-black text-cyan-600 uppercase tracking-widest hover:underline transition-colors">Forgot Password?</a>
             </div>
 
             <button type="submit" id="signInBtn"
-                class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl text-sm shadow-xl shadow-cyan-200/50 transition-all hover:-translate-y-1 active:scale-95 font-display tracking-widest uppercase">
-                Log In
+                class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl text-sm shadow-xl shadow-cyan-200/50 transition-all hover:-translate-y-1 active:scale-95 font-display tracking-widest uppercase flex items-center justify-center gap-3">
+                <span id="btnText">Log In</span>
+                <div id="loader" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             </button>
         </form>
 
         <p class="text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-8">
-            Don't have an account? <a href="{{ route('signup') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Join now</a>
+            Don't have an account? <a href="{{ route('register') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Join now</a>
         </p>
     </div>
 </div>
 
 @push('scripts')
 <script>
+    const emailInput = document.getElementById('emailInput');
+    const emailError = document.getElementById('emailError');
+    const passInput = document.getElementById('passwordInput');
+    const passError = document.getElementById('passError');
+    const loginForm = document.getElementById('loginForm');
+
+    // EMAIL VALIDATION (JS SIDE)
+    emailInput.addEventListener('input', function() {
+        const pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+        if (this.value.length > 0 && !this.value.match(pattern)) {
+            this.classList.add('border-red-500');
+            emailError.classList.remove('hidden');
+        } else {
+            this.classList.remove('border-red-500');
+            emailError.classList.add('hidden');
+        }
+    });
+
+    //PASSWORD VALIDATION (JS SIDE)
+    passInput.addEventListener('input', function() {
+        const val = this.value;
+        if(val.length === 0) {
+            passError.classList.add('hidden');
+            this.classList.remove('border-red-500');
+            return;
+        }
+        passError.classList.remove('hidden');
+        if(val.length < 8) {
+            passError.innerText = "Password too short (min. 8 characters)";
+            passError.className = "text-[9px] font-bold uppercase mt-2 ml-1 text-red-500 italic";
+            this.classList.add('border-red-500');
+        } else {
+            passError.innerText = "Password length is valid";
+            passError.className = "text-[9px] font-bold uppercase mt-2 ml-1 text-cyan-500 italic";
+            this.classList.remove('border-red-500');
+        }
+    });
+
+    
+    loginForm.addEventListener('submit', function(e) {
+        const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+        let isValid = true;
+
+        if (!emailInput.value.match(emailPattern)) {
+            emailInput.classList.add('border-red-500');
+            emailError.classList.remove('hidden');
+            isValid = false;
+        }
+
+        if (passInput.value.length < 1) {
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            return;
+        }
+        
+        const btn = document.getElementById('signInBtn');
+        btn.disabled = true;
+        document.getElementById('btnText').innerText = 'Verifying Account...';
+        document.getElementById('loader').classList.remove('hidden');
+    });
+
+    function togglePassword() {
+        const input = document.getElementById('passwordInput');
+        const icon = document.getElementById('eyeIcon');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />`;
+        } else {
+            input.type = "password";
+            icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+        }
+    }
+
     function setRole(role) {
         document.getElementById('roleInput').value = role;
         const patientTab = document.getElementById('tab-patient');
         const clinicTab = document.getElementById('tab-clinic');
-
         if (role === 'patient') {
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
