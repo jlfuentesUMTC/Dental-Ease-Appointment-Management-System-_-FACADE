@@ -74,6 +74,12 @@
                     </div>
 
                     <div class="flex items-center gap-2">
+                        @if($apt->status === 'confirmed' && $apt->type === 'Telehealth')
+                            <a href="{{ route('patient.video-call', $apt) }}" class="flex items-center gap-2 bg-slate-900 text-white hover:bg-cyan-600 text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all shadow-sm">
+                                Join Call
+                            </a>
+                        @endif
+
                         <span class="text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg
                             {{ $apt->status == 'completed' ? 'bg-slate-900 text-white' : '' }}
                             {{ $apt->status == 'confirmed' ? 'bg-cyan-50 text-cyan-600' : '' }}

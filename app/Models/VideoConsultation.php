@@ -12,7 +12,10 @@ class VideoConsultation extends Model
 
     protected $fillable = [
         'appointment_id',
+        'meeting_link',
+        'meeting_room',
         'room_code',
+        'status',
         'started_at',
         'ended_at',
     ];
@@ -25,5 +28,10 @@ class VideoConsultation extends Model
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function getJitsiRoomAttribute(): string
+    {
+        return $this->room_code ?: $this->meeting_room;
     }
 }

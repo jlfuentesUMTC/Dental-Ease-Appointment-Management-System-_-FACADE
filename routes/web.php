@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\VideoConsultationController;
 
 // PUBLIC ROUTES
 Route::get('/', fn() => view('landing'))->name('home');
@@ -95,7 +96,7 @@ Route::prefix('patient')->name('patient.')->middleware('auth')->group(function (
 
         return view('patient.records', compact('appointments'));
     })->name('records');
-    Route::get('/video-call', fn() => view('patient.video-call'))->name('video-call');
+    Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'patient'])->name('video-call');
 });
 
 // CLINIC ROUTES (PROTECTED BY AUTH)
@@ -133,7 +134,7 @@ Route::prefix('clinic')->name('clinic.')->middleware('auth')->group(function () 
 
         return view('clinic.records', compact('appointments'));
     })->name('records');
-    Route::get('/video-call', fn() => view('clinic.video-call'))->name('video-call');
+    Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'clinic'])->name('video-call');
 });
 
 // OTHER PUBLIC PAGES
