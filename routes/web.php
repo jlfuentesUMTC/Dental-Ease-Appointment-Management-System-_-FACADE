@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth; 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\ClinicProfileController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VideoConsultationController;
@@ -77,7 +78,7 @@ Route::get('/booking-confirmation', function () {
 })->name('booking.confirmation');
 
 // PATIENT ROUTES (PROTECTED BY AUTH)
-Route::prefix('patient')->name('patient.')->middleware('auth')->group(function () {
+Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])->group(function () {
     Route::get('/dashboard', function () {
         $appointments = \App\Models\Appointment::query()
             ->where('patient_id', Auth::id())
@@ -100,7 +101,7 @@ Route::prefix('patient')->name('patient.')->middleware('auth')->group(function (
 });
 
 // CLINIC ROUTES (PROTECTED BY AUTH)
-Route::prefix('clinic')->name('clinic.')->middleware('auth')->group(function () {
+Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->group(function () {
     Route::get('/dashboard', function () {
         $clinic = Auth::user();
         $appointments = \App\Models\Appointment::query()
@@ -134,6 +135,8 @@ Route::prefix('clinic')->name('clinic.')->middleware('auth')->group(function () 
 
         return view('clinic.records', compact('appointments'));
     })->name('records');
+    Route::get('/profile', [ClinicProfileController::class, 'edit'])->name('profile');
+    Route::patch('/profile', [ClinicProfileController::class, 'update'])->name('profile.update');
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'clinic'])->name('video-call');
 });
 

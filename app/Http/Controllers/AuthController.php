@@ -76,12 +76,6 @@ class AuthController extends Controller
             'clinic_name' => 'required_if:role,clinic|nullable|string|max:255',
             'email'       => 'required|email',
             'phone'       => 'required|string|max:20',
-            'clinic_location' => 'required_if:role,clinic|nullable|string|max:255',
-            'clinic_hours' => 'required_if:role,clinic|nullable|string|max:255',
-            'service_names' => 'required_if:role,clinic|array',
-            'service_names.*' => 'nullable|string|max:255',
-            'service_prices' => 'required_if:role,clinic|array',
-            'service_prices.*' => 'nullable|string|max:255',
             'password'    => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
             'role'        => 'required|in:patient,clinic',
         ]);
@@ -92,25 +86,6 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Email is already taken. Please use a different one.'])->withInput();
         }
 
-        $clinicServices = [];
-        if ($request->role === 'clinic') {
-            foreach ($request->input('service_names', []) as $index => $name) {
-                $price = $request->input("service_prices.$index");
-                if ($name && $price) {
-                    $clinicServices[] = [
-                        'name' => $name,
-                        'price' => $price,
-                    ];
-                }
-            }
-
-            if (empty($clinicServices)) {
-                return back()
-                    ->withErrors(['service_names' => 'Please add at least one service with a price.'])
-                    ->withInput();
-            }
-        }
-
         // CREATE NEW USER RECORD
         $user = User::create([
             'name'     => $request->role === 'clinic' ? $request->clinic_name : $request->name,
@@ -118,9 +93,9 @@ class AuthController extends Controller
             'phone'    => $request->phone,
             'password' => Hash::make($request->password),
             'role'     => $request->role,
-            'clinic_location' => $request->role === 'clinic' ? $request->clinic_location : null,
-            'clinic_hours' => $request->role === 'clinic' ? $request->clinic_hours : null,
-            'clinic_services' => $request->role === 'clinic' ? $clinicServices : null,
+            'clinic_location' => null,
+            'clinic_hours' => null,
+            'clinic_services' => null,
         ]);
 
         Auth::login($user);

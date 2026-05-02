@@ -84,33 +84,10 @@
                 @enderror
             </div>
 
-            <div id="clinicProfileFields" style="display:none" class="space-y-4 bg-slate-50/70 border border-slate-100 rounded-2xl p-4">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Clinic Location</label>
-                    <input type="text" name="clinic_location" value="{{ old('clinic_location') }}" placeholder="General Santos City"
-                        class="w-full bg-white border @error('clinic_location') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
-                    @error('clinic_location') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Clinic Hours</label>
-                    <input type="text" name="clinic_hours" value="{{ old('clinic_hours') }}" placeholder="Mon-Sat (9AM - 5PM)"
-                        class="w-full bg-white border @error('clinic_hours') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
-                    @error('clinic_hours') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="space-y-2">
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Services Offered & Prices</label>
-                    @for($i = 0; $i < 3; $i++)
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" name="service_names[]" value="{{ old("service_names.$i") }}" placeholder="Service name"
-                            class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
-                        <input type="text" name="service_prices[]" value="{{ old("service_prices.$i") }}" placeholder="Price"
-                            class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
-                    </div>
-                    @endfor
-                    @error('service_names') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
-                </div>
+            <div id="clinicProfileNotice" style="display:none" class="bg-slate-50/70 border border-slate-100 rounded-2xl p-4">
+                <p class="text-xs font-bold text-slate-500 leading-relaxed">
+                    Clinic location, clinic hours, and services can be added after signup inside your clinic account.
+                </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -201,20 +178,20 @@
         const clinicTab = document.getElementById('tab-clinic');
         const nameField = document.getElementById('nameField');
         const clinicNameField = document.getElementById('clinicNameField');
-        const clinicProfileFields = document.getElementById('clinicProfileFields');
+        const clinicProfileNotice = document.getElementById('clinicProfileNotice');
 
         if (role === 'patient') {
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
             nameField.style.display = 'block';
             clinicNameField.style.display = 'none';
-            clinicProfileFields.style.display = 'none';
+            clinicProfileNotice.style.display = 'none';
         } else {
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
             nameField.style.display = 'none';
             clinicNameField.style.display = 'block';
-            clinicProfileFields.style.display = 'block';
+            clinicProfileNotice.style.display = 'block';
         }
     }
 
