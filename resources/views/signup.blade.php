@@ -83,13 +83,6 @@
                     <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> 
                 @enderror
             </div>
-
-            <div id="clinicProfileNotice" style="display:none" class="bg-slate-50/70 border border-slate-100 rounded-2xl p-4">
-                <p class="text-xs font-bold text-slate-500 leading-relaxed">
-                    Clinic location, clinic hours, and services can be added after signup inside your clinic account.
-                </p>
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>

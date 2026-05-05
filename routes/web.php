@@ -142,14 +142,10 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
 
 // OTHER PUBLIC PAGES
 Route::get('/story', fn() => view('story'))->name('story');
-Route::get('/pricing', function () {
-    $registeredClinics = \App\Models\User::query()
-        ->where('role', 'clinic')
-        ->orderBy('name')
-        ->get();
 
-    return view('pricing', compact('registeredClinics'));
-})->name('pricing');
+
+Route::get('/pricing', [ClinicProfileController::class, 'showPricing'])->name('pricing');
+
 Route::get('/contact', fn() => view('contact'))->name('contact');
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
 Route::get('/learn-more', function () {

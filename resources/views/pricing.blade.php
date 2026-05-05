@@ -12,7 +12,7 @@
               transition-all duration-300 group">
         
         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform"
-             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M15 19l-7-7 7-7"/>
         </svg>
@@ -34,86 +34,67 @@
         </div>
 
         @php
+        // DEFAULT CLINIC (Fallback)
         $clinics = [
             [
                 'name' => 'Smile Central Dental Clinic',
                 'location' => 'Dadiangas Heights, General Santos City',
+                'lat' => '6.1164',
+                'lng' => '125.1716',
                 'landmark' => 'Directly behind SM City GenSan Mall',
                 'phone' => '+63 912 345 6789',
                 'hours' => 'Mon-Sat (9AM - 5PM)',
                 'experience' => '12+ Years',
                 'rating' => '4.9',
-                'tags' => ['Pedia Friendly', 'Accepts HMO', 'Installment Available'],
+                'tags' => ['Pedia Friendly', 'Accepts HMO', 'Installment Available', 'Accepts Bookings'],
                 'image' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=200',
                 'services' => [
-                    ['name' => 'General Oral Prophylaxis (Cleaning)', 'price' => '₱800.00'],
+                    ['name' => 'General Oral Prophylaxis', 'price' => '₱800.00'],
                     ['name' => 'Composite Tooth Filling', 'price' => '₱1,200.00'],
                     ['name' => 'Simple Tooth Extraction', 'price' => '₱700.00'],
-                    ['name' => 'Orthodontic Braces (Downpayment)', 'price' => '₱5,000.00'],
+                    ['name' => 'Orthodontic Braces', 'price' => '₱5,000.00'],
                 ]
-            ],
-            [
-                'name' => 'Elite Care Orthodontics & Aesthetics',
-                'location' => 'Lagao, General Santos City',
-                'landmark' => 'Beside Shell Station, Lagao Road',
-                'phone' => '+63 998 765 4321',
-                'hours' => 'Mon-Fri (10AM - 7PM)',
-                'experience' => '8 Years',
-                'rating' => '4.8',
-                'tags' => ['Cosmetic Specialist', 'Advanced Tech', 'By Appointment'],
-                'image' => 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&q=80&w=200',
-                'services' => [
-                    ['name' => 'Comprehensive Orthodontic Exam', 'price' => '₱1,500.00'],
-                    ['name' => 'Teeth Whitening Laser Treatment', 'price' => '₱8,500.00'],
-                    ['name' => 'Ceramic Self-Ligating Braces', 'price' => '₱65,000.00'],
-                    ['name' => 'Premium Dental Veneers', 'price' => '₱15,000/pc'],
-                ]
-            ],
+            ]
         ];
+
+        if(isset($registeredClinics) && $registeredClinics->count() > 0) {
+            $clinics = $registeredClinics->map(function ($clinic) {
+                $rawServices = is_string($clinic->clinic_services) ? json_decode($clinic->clinic_services, true) : $clinic->clinic_services;
+                
+                $services = collect($rawServices ?: [
+                    ['name' => 'General Checkup', 'price' => 'Contact clinic'],
+                ])->map(fn ($service) => [
+                    'name' => $service['name'] ?? 'Dental Service',
+                    'price' => $service['price'] ?? 'Contact clinic',
+                ])->values()->all();
+
+                return [
+                    'id' => $clinic->id,
+                    'name' => $clinic->clinic_name ?? $clinic->name,
+                    'location' => $clinic->clinic_location ?: 'Clinic location not provided',
+                    'lat' => $clinic->latitude ?? '6.7845', 
+                    'lng' => $clinic->longitude ?? '125.2120',
+                    'landmark' => $clinic->landmark ?: 'Registered Dental Ease clinic',
+                    'phone' => $clinic->phone ?: 'Contact number not provided',
+                    'hours' => $clinic->clinic_hours ?: 'Clinic hours not provided',
+                    'experience' => 'Registered',
+                    'rating' => '5.0',
+                    'tags' => ['Registered Clinic', 'Dental Ease Partner', 'Accepts Bookings'],
+                    'image' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=200',
+                    'services' => $services,
+                ];
+            })->values()->all();
+        }
         @endphp
 
-        @isset($registeredClinics)
-            @php
-                $clinics = $registeredClinics->map(function ($clinic) {
-                    $services = collect($clinic->clinic_services ?: [
-                        ['name' => 'General Checkup', 'price' => 'Contact clinic'],
-                        ['name' => 'Cleaning', 'price' => 'Contact clinic'],
-                        ['name' => 'Consultation', 'price' => 'Contact clinic'],
-                    ])->map(fn ($service) => [
-                        'name' => $service['name'] ?? 'Dental Service',
-                        'price' => $service['price'] ?? 'Contact clinic',
-                    ])->values()->all();
-
-                    return [
-                        'name' => $clinic->name,
-                        'location' => $clinic->clinic_location ?: 'Clinic location not provided',
-                        'landmark' => 'Registered Dental Ease clinic',
-                        'phone' => $clinic->phone ?: 'Contact number not provided',
-                        'hours' => $clinic->clinic_hours ?: 'Clinic hours not provided',
-                        'experience' => 'Registered',
-                        'rating' => '5.0',
-                        'tags' => ['Registered Clinic', 'Dental Ease Partner', 'Accepts Bookings'],
-                        'image' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=200',
-                        'services' => $services,
-                    ];
-                })->values()->all();
-            @endphp
-        @endisset
-
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            @if(empty($clinics))
-            <div class="lg:col-span-2 bg-white border border-slate-100 rounded-3xl p-10 text-center">
-                <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400">No registered clinics yet.</p>
-            </div>
-            @endif
-            @foreach($clinics as $clinic)
-            <div class="group relative bg-white border border-slate-200 rounded-[3rem] overflow-hidden hover:shadow-2xl hover:shadow-cyan-200/40 transition-all duration-500 min-h-[550px] flex flex-col">
+            @foreach($clinics as $index => $clinic)
+            <div id="clinic-card-{{ $index }}" class="relative bg-white border border-slate-200 rounded-[3rem] overflow-hidden shadow-sm transition-all duration-500 min-h-[550px] flex flex-col">
                 
-                <div class="p-10 flex flex-col h-full flex-grow">
-                    
+                {{-- INFO LAYER --}}
+                <div id="info-{{ $index }}" class="p-10 flex flex-col h-full flex-grow transition-opacity duration-300">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start gap-8 mb-8">
                         <img src="{{ $clinic['image'] }}" class="w-32 h-32 rounded-[2.5rem] object-cover ring-8 ring-slate-50 shadow-lg" alt="clinic logo">
-                        
                         <div class="text-center sm:text-left pt-2">
                             <h3 class="font-display font-black text-slate-800 uppercase text-2xl tracking-tight leading-tight mb-3">
                                 {{ $clinic['name'] }}
@@ -128,7 +109,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-4 mb-8 group-hover:opacity-10 transition-opacity">
+                    <div id="stats-{{ $index }}" class="grid grid-cols-3 gap-4 mb-8">
                         <div class="text-center p-3 bg-cyan-50/50 rounded-2xl border border-cyan-100">
                             <p class="text-[9px] font-black text-cyan-600 uppercase tracking-widest">Experience</p>
                             <p class="text-sm font-black text-slate-800">{{ $clinic['experience'] }}</p>
@@ -143,11 +124,13 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 group-hover:opacity-10 transition-opacity duration-300">
+                    <div id="details-{{ $index }}" class="grid grid-cols-1 sm:grid-cols-2 gap-8">
                         <div class="space-y-5">
                             <div>
                                 <h4 class="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-2 flex items-center gap-2">
-                                    <svg class="w-3.5 h-3.5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <button onclick="toggleMap({{ $index }})" class="hover:scale-110 transition-transform active:scale-95 group/loc">
+                                        <svg class="w-5 h-5 text-cyan-500 group-hover/loc:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </button>
                                     Location Details
                                 </h4>
                                 <p class="text-sm font-bold text-slate-700 leading-tight">{{ $clinic['location'] }}</p>
@@ -162,7 +145,6 @@
                                 <p class="text-xs font-medium text-slate-400 italic">{{ $clinic['hours'] }}</p>
                             </div>
                         </div>
-
                         <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100 border-dashed">
                             <h4 class="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-3">Patient Notice</h4>
                             <p class="text-xs text-slate-500 font-medium leading-relaxed italic">
@@ -171,24 +153,77 @@
                         </div>
                     </div>
 
-                    <div class="mt-auto pt-8 text-center sm:text-left group-hover:opacity-0 transition-opacity">
-                        <div class="inline-flex items-center gap-3 py-4 px-8 bg-slate-900 rounded-2xl text-white font-black text-[11px] uppercase tracking-[0.2em]">
+                    <div class="mt-auto pt-8 text-center sm:text-left">
+                        <button onclick="togglePricing({{ $index }})" id="main-btn-{{ $index }}" 
+                                class="inline-flex items-center gap-3 py-4 px-8 bg-slate-900 rounded-2xl text-white font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-lg">
                             <span class="relative flex h-2.5 w-2.5">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
+                                <span id="ping-{{ $index }}" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                                <span id="dot-{{ $index }}" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
                             </span>
-                            Hover to check prices
-                        </div>
+                            <span id="btn-text-{{ $index }}">Click to check prices</span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="absolute inset-0 bg-white/98 backdrop-blur-md p-10 sm:p-14 transform translate-y-full group-hover:translate-y-0 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col">
+                {{-- DYNAMIC MAP LAYER --}}
+                <div id="map-layer-{{ $index }}" 
+                     class="absolute inset-0 bg-white p-6 transform -translate-x-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col z-20">
+                    
+                    <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-cyan-50 rounded-lg">
+                                <svg class="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-slate-900 uppercase tracking-widest text-[10px]">Verified Location</h4>
+                                <p class="text-[11px] text-cyan-600 font-bold uppercase">{{ $clinic['name'] }}</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleMap({{ $index }})" class="p-2 bg-slate-100 rounded-full text-slate-500 hover:bg-red-500 hover:text-white transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="flex-grow bg-slate-100 rounded-[2.5rem] overflow-hidden relative shadow-inner border-4 border-slate-50">
+                        {{-- GI-UPDATE NAKO ANG URL PARA MOGAWAS ANG INFO WINDOW BOX --}}
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            frameborder="0" 
+                            style="border:0"
+                            src="https://maps.google.com/maps?q={{ $clinic['lat'] }},{{ $clinic['lng'] }}+({{ urlencode($clinic['name']) }})&t=&z=17&ie=UTF8&iwloc=B&output=embed"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <div class="mt-4 px-2 flex justify-between items-center">
+                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                            <span class="text-cyan-500">📍 Address:</span> {{ $clinic['location'] }}
+                         </p>
+                         <a href="https://www.google.com/maps/dir/?api=1&destination={{ $clinic['lat'] }},{{ $clinic['lng'] }}" 
+                            target="_blank" 
+                            class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-cyan-500 hover:text-white transition-colors">
+                            Directions
+                         </a>
+                    </div>
+                </div>
+
+                {{-- PRICING LAYER --}}
+                <div id="pricing-layer-{{ $index }}" 
+                     class="absolute inset-0 bg-white/98 backdrop-blur-md p-10 sm:p-14 transform translate-y-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col z-10">
+                    
                     <div class="flex items-center justify-between mb-8 border-b-2 border-slate-50 pb-6 flex-shrink-0">
                         <div>
                             <h4 class="font-black text-slate-900 uppercase tracking-[0.2em] text-lg">Official Pricing</h4>
                             <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Subject to professional assessment</p>
                         </div>
-                        <span class="bg-cyan-500 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest">Live 2026</span>
+                        <div class="flex items-center gap-4">
+                            <span class="bg-cyan-500 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest">Live 2026</span>
+                            <button onclick="togglePricing({{ $index }})" 
+                                    class="p-2 rounded-full hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all duration-300">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="space-y-5 flex-grow overflow-y-auto pr-4 custom-scrollbar">
@@ -202,7 +237,7 @@
                     </div>
 
                     <div class="mt-10 flex gap-4 flex-shrink-0">
-                        <button class="flex-grow bg-slate-900 text-white text-xs font-black uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-cyan-500 hover:shadow-xl hover:shadow-cyan-200 transition-all active:scale-95">
+                        <button class="flex-grow bg-slate-900 text-white text-xs font-black uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-cyan-500 hover:shadow-xl transition-all active:scale-95">
                             Book Appointment
                         </button>
                     </div>
@@ -212,6 +247,44 @@
         </div>
     </div>
 </section>
+
+<script>
+    function toggleMap(index) {
+        const mapLayer = document.getElementById(`map-layer-${index}`);
+        mapLayer.classList.toggle('-translate-x-full');
+    }
+
+    function togglePricing(index) {
+        const layer = document.getElementById(`pricing-layer-${index}`);
+        const btn = document.getElementById(`main-btn-${index}`);
+        const btnText = document.getElementById(`btn-text-${index}`);
+        const ping = document.getElementById(`ping-${index}`);
+        const dot = document.getElementById(`dot-${index}`);
+        const stats = document.getElementById(`stats-${index}`);
+        const details = document.getElementById(`details-${index}`);
+        const card = document.getElementById(`clinic-card-${index}`);
+
+        if (layer.classList.contains('translate-y-full')) {
+            layer.classList.remove('translate-y-full');
+            btn.classList.replace('bg-slate-900', 'bg-red-500');
+            btnText.innerText = 'Close Pricing';
+            ping.classList.replace('bg-cyan-400', 'bg-white');
+            dot.classList.replace('bg-cyan-400', 'bg-white');
+            stats.style.opacity = "0.1";
+            details.style.opacity = "0.1";
+            card.classList.add('shadow-2xl', 'shadow-cyan-200/40');
+        } else {
+            layer.classList.add('translate-y-full');
+            btn.classList.replace('bg-red-500', 'bg-slate-900');
+            btnText.innerText = 'Click to check prices';
+            ping.classList.replace('bg-white', 'bg-cyan-400');
+            dot.classList.replace('bg-white', 'bg-cyan-400');
+            stats.style.opacity = "1";
+            details.style.opacity = "1";
+            card.classList.remove('shadow-2xl', 'shadow-cyan-200/40');
+        }
+    }
+</script>
 
 <style>
     .custom-scrollbar::-webkit-scrollbar { width: 5px; }
