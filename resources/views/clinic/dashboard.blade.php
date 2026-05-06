@@ -51,7 +51,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             @php
             $stats = [
-                ['value'=>str_pad($todaysAppointments->count(), 2, '0', STR_PAD_LEFT),'label'=>"Today's Apps",'svg'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                ['value'=>str_pad($todaysAppointments->count(), 2, '0', STR_PAD_LEFT),'label'=>"Today's Appointments",'svg'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                 ['value'=>str_pad($pendingAppointments->count(), 2, '0', STR_PAD_LEFT),'label'=>'Waiting','svg'=>'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['value'=>str_pad($completedAppointments->count(), 2, '0', STR_PAD_LEFT),'label'=>'Completed','svg'=>'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
                 ['value'=>str_pad($uniquePatients, 2, '0', STR_PAD_LEFT),'label'=>'Total Patients','svg'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857'],

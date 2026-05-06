@@ -13,13 +13,13 @@ use Illuminate\View\View;
 
 class VideoConsultationController extends Controller
 {
-    public function patient(Request $request, ?Appointment $appointment = null): RedirectResponse
+    public function patient(Request $request, ?Appointment $appointment = null): RedirectResponse|View
     {
         $appointment ??= Appointment::query()
             ->where('patient_id', $request->user()->id)
             ->where('type', 'Telehealth')
             ->where('status', 'confirmed')
-            ->latest('appointment_date')
+            ->latestBooked()
             ->first();
 
         if (!$appointment) {
@@ -36,7 +36,14 @@ class VideoConsultationController extends Controller
                 ->with('status', 'Please wait until the clinic starts this video consultation.');
         }
 
-        return $this->redirectToMeet($appointment);
+        $consultation = $this->consultationFor($appointment);
+
+        return view('video.patient', [
+            'appointment' => $appointment,
+            'jitsiDomain' => $this->jitsiDomain(),
+            'roomName' => $consultation->jitsi_room,
+            'endedUrl' => route('patient.video-call.ended'),
+        ]);
     }
 
     public function clinic(Request $request, ?Appointment $appointment = null): RedirectResponse|View
@@ -51,7 +58,7 @@ class VideoConsultationController extends Controller
             })
             ->where('type', 'Telehealth')
             ->where('status', 'confirmed')
-            ->latest('appointment_date')
+            ->latestBooked()
             ->first();
 
         if (!$appointment) {
@@ -70,7 +77,18 @@ class VideoConsultationController extends Controller
             'jitsiDomain' => $this->jitsiDomain(),
             'meetingLink' => $this->meetingLink($consultation),
             'roomName' => $consultation->jitsi_room,
+            'endedUrl' => route('clinic.video-call.ended'),
         ]);
+    }
+
+    public function patientEnded(): View
+    {
+        return $this->endedCall('patient');
+    }
+
+    public function clinicEnded(): View
+    {
+        return $this->endedCall('clinic');
     }
 
     public function markClinicStarted(Request $request, Appointment $appointment): JsonResponse
@@ -102,6 +120,14 @@ class VideoConsultationController extends Controller
         $consultation = $this->consultationFor($appointment);
 
         return redirect()->away($this->meetingLink($consultation));
+    }
+
+    private function endedCall(string $role): View
+    {
+        return view('video-consultation.ended', [
+            'backUrl' => route($role.'.appointments'),
+            'role' => $role,
+        ]);
     }
 
     private function patientCanJoin(Appointment $appointment): bool

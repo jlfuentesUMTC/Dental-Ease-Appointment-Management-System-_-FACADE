@@ -2,13 +2,23 @@
 @section('title', 'Start Video Consultation - DENTAL EASE')
 
 @section('content')
-<div class="min-h-screen bg-slate-950 text-white grid lg:grid-cols-[360px_1fr]">
-    <aside class="bg-slate-900 border-r border-white/10 p-6 flex flex-col gap-6">
+<div id="clinic-call-shell" class="min-h-screen bg-slate-950 text-white grid lg:grid-cols-[360px_1fr]">
+    <aside id="call-sidebar" class="bg-slate-900 border-r border-white/10 p-6 flex flex-col gap-6">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <span class="text-cyan-300 text-[10px] font-black uppercase tracking-[0.3em]">Clinic Host Mode</span>
+                <h1 class="font-display text-3xl font-black uppercase tracking-tight mt-2">
+                    Become <span class="text-cyan-300">Moderator</span>
+                </h1>
+            </div>
+            <button id="hide-sidebar" type="button" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/15 text-white flex items-center justify-center transition-all" aria-label="Hide side panel">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+        </div>
+
         <div>
-            <span class="text-cyan-300 text-[10px] font-black uppercase tracking-[0.3em]">Clinic Host Mode</span>
-            <h1 class="font-display text-3xl font-black uppercase tracking-tight mt-2">
-                Become <span class="text-cyan-300">Moderator</span>
-            </h1>
             <p class="text-slate-300 text-sm font-semibold leading-relaxed mt-3">
                 Public meet.jit.si requires the host to log in before a room can start. Click Log-in inside Jitsi using the clinic account. Patients stay blocked until Jitsi confirms this browser is moderator.
             </p>
@@ -27,14 +37,16 @@
             Waiting for Jitsi moderator confirmation
         </div>
 
-        <a href="{{ $meetingLink }}" target="_blank" class="text-center bg-white text-slate-900 hover:bg-cyan-300 px-5 py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all">
-            Open Jitsi in New Tab
-        </a>
-
         <a href="{{ route('clinic.appointments') }}" class="text-center bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 px-5 py-4 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all">
             Back to Schedules
         </a>
     </aside>
+
+    <button id="show-sidebar" type="button" class="hidden fixed left-4 top-4 z-50 bg-slate-900/95 text-white border border-white/10 rounded-xl w-11 h-11 items-center justify-center shadow-xl" aria-label="Show side panel">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+        </svg>
+    </button>
 
     <main class="min-h-screen">
         <div id="jitsi-room" class="w-full h-screen bg-black"></div>
@@ -44,7 +56,13 @@
 <script src="https://{{ $jitsiDomain }}/external_api.js"></script>
 <script>
     const statusBox = document.getElementById('host-status');
+    const shell = document.getElementById('clinic-call-shell');
+    const sidebar = document.getElementById('call-sidebar');
+    const hideSidebar = document.getElementById('hide-sidebar');
+    const showSidebar = document.getElementById('show-sidebar');
+    const endedUrl = @json($endedUrl);
     let markedStarted = false;
+    let redirectedToEnded = false;
 
     function setStatus(text, className) {
         statusBox.textContent = text;
@@ -74,6 +92,28 @@
         setStatus('Clinic is moderator. Patients may now join.', 'bg-emerald-500/10 border border-emerald-300/20 text-emerald-100 rounded-2xl p-4 text-xs font-black uppercase tracking-widest');
     }
 
+    function goToEndedCall() {
+        if (redirectedToEnded) return;
+        redirectedToEnded = true;
+        window.location.href = endedUrl;
+    }
+
+    hideSidebar.addEventListener('click', () => {
+        sidebar.classList.add('hidden');
+        shell.classList.remove('lg:grid-cols-[360px_1fr]');
+        shell.classList.add('lg:grid-cols-1');
+        showSidebar.classList.remove('hidden');
+        showSidebar.classList.add('flex');
+    });
+
+    showSidebar.addEventListener('click', () => {
+        sidebar.classList.remove('hidden');
+        shell.classList.remove('lg:grid-cols-1');
+        shell.classList.add('lg:grid-cols-[360px_1fr]');
+        showSidebar.classList.add('hidden');
+        showSidebar.classList.remove('flex');
+    });
+
     const api = new JitsiMeetExternalAPI(@json($jitsiDomain), {
         roomName: @json($roomName),
         parentNode: document.getElementById('jitsi-room'),
@@ -97,5 +137,8 @@
             markStarted();
         }
     });
+
+    api.addListener('readyToClose', goToEndedCall);
+    api.addListener('videoConferenceLeft', goToEndedCall);
 </script>
 @endsection

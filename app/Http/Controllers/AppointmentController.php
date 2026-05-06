@@ -17,7 +17,7 @@ class AppointmentController extends Controller
     {
         $appointments = Appointment::query()
             ->when(Auth::check(), fn ($query) => $query->where('patient_id', Auth::id()))
-            ->latest('appointment_date')
+            ->latestBooked()
             ->get();
 
         $clinics = User::query()
@@ -40,7 +40,7 @@ class AppointmentController extends Controller
                             ->where('clinic_name', $clinic->name);
                     });
             })
-            ->latest('appointment_date')
+            ->latestBooked()
             ->get();
 
         return view('clinic.appointments', compact('appointments'));

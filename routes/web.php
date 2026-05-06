@@ -82,7 +82,7 @@ Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])
     Route::get('/dashboard', function () {
         $appointments = \App\Models\Appointment::query()
             ->where('patient_id', Auth::id())
-            ->latest('appointment_date')
+            ->latestBooked()
             ->get();
 
         return view('patient.dashboard', compact('appointments'));
@@ -92,12 +92,13 @@ Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])
     Route::get('/records', function () {
         $appointments = \App\Models\Appointment::query()
             ->where('patient_id', Auth::id())
-            ->latest('appointment_date')
+            ->latestBooked()
             ->get();
 
         return view('patient.records', compact('appointments'));
     })->name('records');
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'patient'])->name('video-call');
+    Route::get('/video-call-ended', [VideoConsultationController::class, 'patientEnded'])->name('video-call.ended');
 });
 
 // CLINIC ROUTES (PROTECTED BY AUTH)
@@ -112,7 +113,7 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
                             ->where('clinic_name', $clinic->name);
                     });
             })
-            ->latest('appointment_date')
+            ->latestBooked()
             ->get();
 
         return view('clinic.dashboard', compact('appointments'));
@@ -130,7 +131,7 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
                             ->where('clinic_name', $clinic->name);
                     });
             })
-            ->latest('appointment_date')
+            ->latestBooked()
             ->get();
 
         return view('clinic.records', compact('appointments'));
@@ -139,6 +140,7 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
     Route::patch('/profile', [ClinicProfileController::class, 'update'])->name('profile.update');
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'clinic'])->name('video-call');
     Route::post('/video-call/{appointment}/started', [VideoConsultationController::class, 'markClinicStarted'])->name('video-call.started');
+    Route::get('/video-call-ended', [VideoConsultationController::class, 'clinicEnded'])->name('video-call.ended');
 });
 
 // OTHER PUBLIC PAGES
