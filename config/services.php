@@ -36,7 +36,7 @@ return [
     ],
 
     'jitsi' => [
-        'domain' => env('JITSI_DOMAIN', 'meet.ffmuc.net'),
+        'domain' => env('JITSI_DOMAIN', 'meet.jit.si'),
     ],
 
 ];

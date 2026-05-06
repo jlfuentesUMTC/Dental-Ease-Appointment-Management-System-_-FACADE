@@ -2,6 +2,20 @@
 @section('title', 'Book Appointment - DENTAL EASE')
 
 @section('content')
+@php
+    $clinicServicePayload = collect($clinics ?? [])->mapWithKeys(function ($clinic) {
+        $rawServices = is_string($clinic->clinic_services)
+            ? json_decode($clinic->clinic_services, true)
+            : $clinic->clinic_services;
+
+        $services = collect($rawServices ?: [])
+            ->map(fn ($service) => is_array($service) ? ($service['name'] ?? null) : $service)
+            ->filter()
+            ->values();
+
+        return [$clinic->id => $services];
+    });
+@endphp
 <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20">
@@ -59,7 +73,7 @@
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Select Clinic</label>
                     <div class="relative">
-                        <select name="clinic_id" required class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium appearance-none">
+                        <select name="clinic_id" id="clinic-select" required class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium appearance-none">
                             <option value="" disabled selected>Choose Clinic</option>
                             @foreach($clinics ?? [] as $clinic)
                             <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
@@ -74,7 +88,7 @@
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Service Type</label>
                     <div class="relative">
-                        <select name="service" required class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium appearance-none">
+                        <select name="service" id="service-select" required class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium appearance-none">
                             <option value="checkup">Checkup</option>
                             <option value="cleaning">Cleaning</option>
                             <option value="consultation">Consultation</option>
@@ -125,6 +139,12 @@
                 </div>
             </div>
 
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Appointment Time</label>
+                <input type="time" name="time"
+                    class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+            </div>
+
             <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-black py-4 rounded-2xl text-sm shadow-xl shadow-cyan-200/50 transition-all hover:-translate-y-1 active:scale-95 font-display tracking-widest uppercase">
                 Submit Booking
             </button>
@@ -138,6 +158,24 @@
 
 <script>
 (function () {
+    const clinicServices = @json($clinicServicePayload);
+    const clinicSelect = document.getElementById('clinic-select');
+    const serviceSelect = document.getElementById('service-select');
+    const fallbackServices = ['Checkup', 'Cleaning', 'Consultation'];
+
+    function populateServices() {
+        const services = clinicServices[clinicSelect.value] || fallbackServices;
+        serviceSelect.innerHTML = '';
+
+        services.forEach((service) => {
+            const option = new Option(service, service);
+            serviceSelect.add(option);
+        });
+    }
+
+    clinicSelect.addEventListener('change', populateServices);
+    populateServices();
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

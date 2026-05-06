@@ -25,6 +25,30 @@
         .font-display {
             font-family: var(--font-main);
         }
+
+        .fade-in {
+            animation: fadeInUp 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .fade-in-soft {
+            animation: fadeInSoft 420ms ease-out both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInSoft {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
     @stack('styles')
 </head>

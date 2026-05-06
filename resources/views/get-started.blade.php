@@ -38,7 +38,7 @@
     </div>
 </nav>
 
-<section class="relative bg-gradient-to-b from-cyan-50 via-white to-slate-50 pt-12 pb-12 sm:pt-20 sm:pb-20 px-4 text-center overflow-hidden">
+<section class="relative bg-gradient-to-b from-cyan-50 via-white to-slate-50 pt-12 pb-12 sm:pt-20 sm:pb-20 px-4 text-center overflow-hidden fade-in">
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from)_0%,_transparent_70%)] from-cyan-100/40 to-transparent -z-10"></div>
 
     <div class="max-w-7xl mx-auto relative"> 
@@ -72,7 +72,7 @@
     </svg>
 </div>
 
-<section class="bg-gradient-to-b from-slate-50 via-white to-white pt-4 pb-10 px-4">
+<section class="bg-gradient-to-b from-slate-50 via-white to-white pt-4 pb-10 px-4 fade-in-soft">
     <div class="max-w-4xl mx-auto text-center">
         <span class="text-cyan-600 text-[10px] uppercase tracking-[0.3em] font-black">User Guide Below</span>
         

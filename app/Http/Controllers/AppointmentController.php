@@ -23,7 +23,7 @@ class AppointmentController extends Controller
         $clinics = User::query()
             ->where('role', 'clinic')
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'clinic_services']);
 
         return view('patient.appointments', compact('appointments', 'clinics'));
     }
@@ -131,6 +131,13 @@ class AppointmentController extends Controller
             ? User::query()->where('role', 'clinic')->find($validated['clinic_id'])
             : null;
 
+        if ($clinic && !$this->clinicOffersService($clinic, $validated['service'])) {
+            back()
+                ->withErrors(['service' => 'Please choose an available service from the selected clinic.'])
+                ->withInput()
+                ->throwResponse();
+        }
+
         $appointment = Appointment::create([
             'doctor_id' => null,
             'clinic_id' => $clinic?->id,
@@ -138,7 +145,7 @@ class AppointmentController extends Controller
             'patient_name' => $validated['name'] ?? $user?->name ?? 'Guest Patient',
             'patient_email' => $validated['email'] ?? $user?->email ?? 'guest@example.com',
             'patient_phone' => $validated['phone'] ?? $user?->phone,
-            'clinic_name' => $clinic?->name ?? $this->clinicLabel($validated['clinic']),
+            'clinic_name' => $clinic?->name ?? $validated['clinic'],
             'service' => $validated['service'],
             'appointment_date' => $validated['date'],
             'appointment_time' => $validated['time'] ?? null,
@@ -161,14 +168,18 @@ class AppointmentController extends Controller
         return $appointment;
     }
 
-    private function clinicLabel(string $clinic): string
+    private function clinicOffersService(User $clinic, string $service): bool
     {
-        return [
-            'smile-central' => 'Smile Central',
-            'elite-care' => 'Elite Care',
-            'white-pearly' => 'White Pearly',
-            'bright-smiles' => 'Bright Smiles Dental',
-            'city-dental' => 'City Dental Care',
-        ][$clinic] ?? $clinic;
+        $services = collect($clinic->clinic_services ?: [])
+            ->map(fn ($item) => is_array($item) ? ($item['name'] ?? null) : $item)
+            ->filter()
+            ->map(fn ($name) => mb_strtolower(trim((string) $name)));
+
+        if ($services->isEmpty()) {
+            return true;
+        }
+
+        return $services->contains(mb_strtolower(trim($service)));
     }
+
 }

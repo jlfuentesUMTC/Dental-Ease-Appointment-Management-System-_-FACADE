@@ -54,7 +54,7 @@ Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return redirect('/login');
+    return view('logout');
 })->name('logout');
 
 Route::post('/notifications/read', [NotificationController::class, 'markAllRead'])
@@ -138,6 +138,7 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
     Route::get('/profile', [ClinicProfileController::class, 'edit'])->name('profile');
     Route::patch('/profile', [ClinicProfileController::class, 'update'])->name('profile.update');
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'clinic'])->name('video-call');
+    Route::post('/video-call/{appointment}/started', [VideoConsultationController::class, 'markClinicStarted'])->name('video-call.started');
 });
 
 // OTHER PUBLIC PAGES

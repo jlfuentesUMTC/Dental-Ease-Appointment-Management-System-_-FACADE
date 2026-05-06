@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\VideoConsultation;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class VideoConsultationController extends Controller
 {
@@ -28,10 +30,16 @@ class VideoConsultationController extends Controller
 
         abort_unless($appointment->patient_id === $request->user()->id, 403);
 
+        if (!$this->patientCanJoin($appointment)) {
+            return redirect()
+                ->route('patient.appointments')
+                ->with('status', 'Please wait until the clinic starts this video consultation.');
+        }
+
         return $this->redirectToMeet($appointment);
     }
 
-    public function clinic(Request $request, ?Appointment $appointment = null): RedirectResponse
+    public function clinic(Request $request, ?Appointment $appointment = null): RedirectResponse|View
     {
         $appointment ??= Appointment::query()
             ->where(function ($query) use ($request) {
@@ -54,7 +62,37 @@ class VideoConsultationController extends Controller
 
         abort_unless($this->belongsToClinic($appointment, $request->user()), 403);
 
-        return $this->redirectToMeet($appointment);
+        $consultation = $this->consultationFor($appointment);
+
+        return view('video.clinic', [
+            'appointment' => $appointment,
+            'consultation' => $consultation,
+            'jitsiDomain' => $this->jitsiDomain(),
+            'meetingLink' => $this->meetingLink($consultation),
+            'roomName' => $consultation->jitsi_room,
+        ]);
+    }
+
+    public function markClinicStarted(Request $request, Appointment $appointment): JsonResponse
+    {
+        abort_unless($this->belongsToClinic($appointment, $request->user()), 403);
+        abort_unless($appointment->type === 'Telehealth' && $appointment->status === 'confirmed', 403);
+
+        $consultation = $this->consultationFor($appointment);
+        $updates = [
+            'started_at' => $consultation->started_at ?: now(),
+        ];
+
+        if (Schema::hasColumn('video_consultations', 'status')) {
+            $updates['status'] = 'active';
+        }
+
+        $consultation->forceFill($updates)->save();
+
+        return response()->json([
+            'started' => true,
+            'meeting_link' => $this->meetingLink($consultation->refresh()),
+        ]);
     }
 
     private function redirectToMeet(Appointment $appointment): RedirectResponse
@@ -63,7 +101,16 @@ class VideoConsultationController extends Controller
 
         $consultation = $this->consultationFor($appointment);
 
-        return redirect()->away($consultation->meeting_link ?: 'https://'.$this->jitsiDomain().'/'.$consultation->jitsi_room);
+        return redirect()->away($this->meetingLink($consultation));
+    }
+
+    private function patientCanJoin(Appointment $appointment): bool
+    {
+        $consultation = VideoConsultation::query()
+            ->where('appointment_id', $appointment->id)
+            ->first();
+
+        return (bool) $consultation?->started_at;
     }
 
     private function consultationFor(Appointment $appointment): VideoConsultation
@@ -138,6 +185,11 @@ class VideoConsultationController extends Controller
             ->replace(['https://', 'http://'], '')
             ->trim('/')
             ->toString();
+    }
+
+    private function meetingLink(VideoConsultation $consultation): string
+    {
+        return $consultation->meeting_link ?: 'https://'.$this->jitsiDomain().'/'.$consultation->jitsi_room;
     }
 
     private function belongsToClinic(Appointment $appointment, $clinic): bool

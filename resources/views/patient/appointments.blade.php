@@ -6,6 +6,18 @@
 
 @php
     $nextAppointment = $appointments->where('appointment_date', '>=', now()->startOfDay())->sortBy('appointment_date')->first();
+    $clinicServicePayload = collect($clinics ?? [])->mapWithKeys(function ($clinic) {
+        $rawServices = is_string($clinic->clinic_services)
+            ? json_decode($clinic->clinic_services, true)
+            : $clinic->clinic_services;
+
+        $services = collect($rawServices ?: [])
+            ->map(fn ($service) => is_array($service) ? ($service['name'] ?? null) : $service)
+            ->filter()
+            ->values();
+
+        return [$clinic->id => $services];
+    });
 @endphp
 
 <div class="min-h-screen bg-slate-50 relative overflow-hidden">
@@ -75,9 +87,21 @@
 
                     <div class="flex items-center gap-2">
                         @if($apt->status === 'confirmed' && $apt->type === 'Telehealth')
+                            @php
+                                $consultationStarted = \App\Models\VideoConsultation::query()
+                                    ->where('appointment_id', $apt->id)
+                                    ->whereNotNull('started_at')
+                                    ->exists();
+                            @endphp
+                            @if($consultationStarted)
                             <a href="{{ route('patient.video-call', $apt) }}" class="flex items-center gap-2 bg-slate-900 text-white hover:bg-cyan-600 text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all shadow-sm">
                                 Join Call
                             </a>
+                            @else
+                            <button disabled class="flex items-center gap-2 bg-slate-100 text-slate-400 text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg cursor-not-allowed">
+                                Waiting for Clinic
+                            </button>
+                            @endif
                         @endif
 
                         <span class="text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg
@@ -111,7 +135,7 @@
             @csrf
             <div>
                 <label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 ml-1">Select Clinic</label>
-                <select name="clinic_id" required class="w-full bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest outline-none">
+                <select name="clinic_id" id="clinic-select" required class="w-full bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest outline-none">
                     @forelse($clinics as $clinic)
                     <option value="{{ $clinic->id }}">{{ $clinic->name }}</option>
                     @empty
@@ -123,7 +147,7 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 ml-1">Service</label>
-                    <select name="service" class="w-full bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest outline-none">
+                    <select name="service" id="service-select" class="w-full bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest outline-none">
                         <option value="checkup">Checkup</option>
                         <option value="cleaning">Cleaning</option>
                         <option value="consultation">Consultation</option>
@@ -138,9 +162,22 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-3">
-                <div>
+                <div class="relative">
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 ml-1">Date</label>
-                    <input type="date" name="date" required class="w-full bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest outline-none">
+                    <input type="text" id="date-display" readonly placeholder="Pick a date" class="w-full bg-slate-50 border-2 border-transparent focus:border-cyan-500 rounded-xl px-4 py-3 text-xs font-black uppercase tracking-widest outline-none cursor-pointer">
+                    <input type="hidden" name="date" id="selected-date" required>
+                    <div id="calendar-popover" class="absolute bottom-full left-0 mb-3 bg-white border border-slate-100 rounded-2xl p-3 shadow-[0_-15px_40px_rgba(0,0,0,0.12)] z-50 hidden w-64">
+                        <div class="flex items-center justify-between mb-2 gap-1 px-1">
+                            <select id="month-select" class="bg-slate-50 border-none text-[9px] font-black text-slate-800 uppercase tracking-tight rounded-lg px-1 py-1 outline-none focus:ring-1 focus:ring-cyan-500 cursor-pointer flex-grow"></select>
+                            <select id="year-select" class="bg-slate-50 border-none text-[9px] font-black text-slate-800 uppercase tracking-tight rounded-lg px-1 py-1 outline-none focus:ring-1 focus:ring-cyan-500 cursor-pointer w-16"></select>
+                        </div>
+                        <div class="grid grid-cols-7 mb-1 text-center border-b border-slate-50 pb-1">
+                            @foreach(['S','M','T','W','T','F','S'] as $day)
+                            <div class="text-[7px] font-black text-slate-300 uppercase py-1">{{ $day }}</div>
+                            @endforeach
+                        </div>
+                        <div id="calendar-days" class="grid grid-cols-7 gap-0.5"></div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5 ml-1">Time</label>
@@ -154,13 +191,114 @@
 
 @push('scripts')
 <script>
-    function showBookingModal() { document.getElementById('bookingModal').classList.remove('hidden'); }
+    const clinicServices = @json($clinicServicePayload);
+    const fallbackServices = ['Checkup', 'Cleaning', 'Consultation'];
+
+    function showBookingModal() {
+        document.getElementById('bookingModal').classList.remove('hidden');
+        renderCalendar();
+    }
     function hideBookingModal() { document.getElementById('bookingModal').classList.add('hidden'); }
     function filterAppointments(query) {
         const q = query.toLowerCase();
         document.querySelectorAll('[data-title]').forEach(card => {
             card.style.display = card.dataset.title.includes(q) ? '' : 'none';
         });
+    }
+
+    const clinicSelect = document.getElementById('clinic-select');
+    const serviceSelect = document.getElementById('service-select');
+
+    function populateServices() {
+        const services = clinicServices[clinicSelect.value] || fallbackServices;
+        serviceSelect.innerHTML = '';
+        services.forEach((service) => serviceSelect.add(new Option(service, service)));
+    }
+
+    clinicSelect?.addEventListener('change', populateServices);
+    populateServices();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let current = new Date(today.getFullYear(), today.getMonth(), 1);
+    let selectedDateStr = null;
+
+    const popover = document.getElementById('calendar-popover');
+    const dateInput = document.getElementById('date-display');
+    const hiddenDate = document.getElementById('selected-date');
+    const monthSelect = document.getElementById('month-select');
+    const yearSelect = document.getElementById('year-select');
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    monthNames.forEach((month, index) => monthSelect.add(new Option(month.toUpperCase(), index)));
+    for (let year = today.getFullYear(); year <= today.getFullYear() + 5; year++) {
+        yearSelect.add(new Option(year, year));
+    }
+
+    dateInput.addEventListener('click', (event) => {
+        event.stopPropagation();
+        popover.classList.toggle('hidden');
+        renderCalendar();
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!popover.contains(event.target) && event.target !== dateInput) {
+            popover.classList.add('hidden');
+        }
+    });
+
+    monthSelect.addEventListener('change', () => {
+        current.setMonth(parseInt(monthSelect.value));
+        renderCalendar();
+    });
+
+    yearSelect.addEventListener('change', () => {
+        current.setFullYear(parseInt(yearSelect.value));
+        renderCalendar();
+    });
+
+    function pad(value) {
+        return String(value).padStart(2, '0');
+    }
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendar-days');
+        if (!grid) return;
+
+        monthSelect.value = current.getMonth();
+        yearSelect.value = current.getFullYear();
+        grid.innerHTML = '';
+
+        const firstDay = new Date(current.getFullYear(), current.getMonth(), 1).getDay();
+        const daysInMonth = new Date(current.getFullYear(), current.getMonth() + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement('div'));
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const cellDate = new Date(current.getFullYear(), current.getMonth(), day);
+            const isPast = cellDate < today;
+            const dateStr = `${current.getFullYear()}-${pad(current.getMonth() + 1)}-${pad(day)}`;
+            const button = document.createElement('button');
+
+            button.type = 'button';
+            button.textContent = day;
+            button.className = `w-full aspect-square flex items-center justify-center rounded-lg text-[10px] font-bold transition-all ${isPast ? 'text-slate-200 cursor-not-allowed' : selectedDateStr === dateStr ? 'bg-cyan-500 text-white shadow-md' : 'text-slate-600 hover:bg-cyan-50 hover:text-cyan-600'}`;
+
+            if (isPast) {
+                button.disabled = true;
+            } else {
+                button.addEventListener('click', () => {
+                    selectedDateStr = dateStr;
+                    hiddenDate.value = dateStr;
+                    dateInput.value = cellDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    popover.classList.add('hidden');
+                    renderCalendar();
+                });
+            }
+
+            grid.appendChild(button);
+        }
     }
 </script>
 @endpush

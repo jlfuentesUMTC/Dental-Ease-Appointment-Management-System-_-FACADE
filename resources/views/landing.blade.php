@@ -35,7 +35,7 @@
     </div>
 </nav>
 
-<section class="relative bg-gradient-to-b from-cyan-50 via-white to-slate-50 pt-12 pb-12 sm:pt-20 sm:pb-20 px-4 text-center overflow-hidden">
+<section class="relative bg-gradient-to-b from-cyan-50 via-white to-slate-50 pt-12 pb-12 sm:pt-20 sm:pb-20 px-4 text-center overflow-hidden fade-in">
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from)_0%,_transparent_70%)] from-cyan-100/40 to-transparent -z-10"></div>
 
     <div class="max-w-7xl mx-auto relative"> 
@@ -63,7 +63,7 @@
     </div>
 </section>
 
-<section id="features" class="py-12 px-4 bg-slate-50 relative -mt-12 sm:-mt-20 z-10">
+<section id="features" class="py-12 px-4 bg-slate-50 relative -mt-12 sm:-mt-20 z-10 fade-in-soft">
     <div class="max-w-6xl mx-auto">
         <div class="flex flex-col md:flex-row items-end justify-between mb-6 gap-6 bg-white p-8 sm:p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/40 border border-slate-100">
             <div class="text-left">
