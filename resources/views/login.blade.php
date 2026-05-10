@@ -33,28 +33,17 @@
             <p class="text-slate-400 text-sm mt-2 font-medium">Log in to manage your dental experience.</p>
         </div>
 
-        <div class="flex bg-slate-100 rounded-2xl p-1.5 mb-8" id="roleToggle">
-            <button type="button" onclick="setRole('patient')" id="tab-patient"
-                class="flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm">
-                Patient
-            </button>
-            <button type="button" onclick="setRole('clinic')" id="tab-clinic"
-                class="flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600">
-                Clinic
-            </button>
-        </div>
+        
 
-        <form id="loginForm" action="{{ route('login') }}" method="POST" class="space-y-5">
+        <form id="loginForm" action="{{ route('login.post') }}" method="POST" class="space-y-5">
             @csrf
-            <input type="hidden" name="role" id="roleInput" value="patient">
-
+            
             {{-- EMAIL SECTION --}}
             <div>
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email Address</label>
                 <input type="email" id="emailInput" name="email" value="{{ old('email') }}" placeholder="your@email.com" required
                     class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium text-slate-900 @error('email') border-red-500 @enderror">
                 
-                {{-- KANI ANG MO DISPLAY SA ERROR MESSAGE GIKAN SA CONTROLLER --}}
                 @error('email')
                     <p class="text-[9px] font-black uppercase mt-2 ml-1 text-red-500 italic tracking-widest">{{ $message }}</p>
                 @enderror
@@ -76,7 +65,6 @@
                     </button>
                 </div>
 
-                {{-- KANI ANG MO DISPLAY SA WRONG PASSWORD MESSAGE --}}
                 @error('password')
                     <p class="text-[9px] font-black uppercase mt-2 ml-1 text-red-500 italic tracking-widest">{{ $message }}</p>
                 @enderror
@@ -89,7 +77,7 @@
                     <input type="checkbox" name="remember" class="accent-cyan-500 w-4 h-4 rounded-lg border-slate-200">
                     <span class="font-bold uppercase tracking-widest group-hover:text-slate-600 transition-colors">Remember me</span>
                 </label>
-               <a href="{{ route('password.request') }}" class="text-[10px] font-black text-cyan-600 uppercase tracking-widest hover:underline transition-colors">Forgot Password?</a>
+                <a href="{{ route('password.request') }}" class="text-[10px] font-black text-cyan-600 uppercase tracking-widest hover:underline transition-colors">Forgot Password?</a>
             </div>
 
             <button type="submit" id="signInBtn"
@@ -135,9 +123,8 @@
         }
         passError.classList.remove('hidden');
         if(val.length < 8) {
-            passError.innerText = "Password too short (min. 8 characters)";
-            passError.className = "text-[9px] font-bold uppercase mt-2 ml-1 text-red-500 italic";
-            this.classList.add('border-red-500');
+            passError.innerText = "Checking length...";
+            passError.className = "text-[9px] font-bold uppercase mt-2 ml-1 text-slate-400 italic";
         } else {
             passError.innerText = "Password length is valid";
             passError.className = "text-[9px] font-bold uppercase mt-2 ml-1 text-cyan-500 italic";
@@ -145,7 +132,6 @@
         }
     });
 
-    
     loginForm.addEventListener('submit', function(e) {
         const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
         let isValid = true;
@@ -180,19 +166,6 @@
         } else {
             input.type = "password";
             icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
-        }
-    }
-
-    function setRole(role) {
-        document.getElementById('roleInput').value = role;
-        const patientTab = document.getElementById('tab-patient');
-        const clinicTab = document.getElementById('tab-clinic');
-        if (role === 'patient') {
-            patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
-            clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
-        } else {
-            clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
-            patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
         }
     }
 </script>

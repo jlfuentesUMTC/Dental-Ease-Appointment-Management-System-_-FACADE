@@ -44,21 +44,21 @@
             </button>
         </div>
 
-       <form id="signupForm" action="{{ route('signup.post') }}" method="POST" class="space-y-4">
+        <form id="signupForm" action="{{ route('signup.post') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             <input type="hidden" name="role" id="roleInput" value="{{ old('role', 'patient') }}">
 
             <div id="nameField">
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
-                <input type="text" name="name" value="{{ old('name') }}" placeholder="John Doe"
-                    class="w-full bg-white border @error('name') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+                <input type="text" id="patientName" name="name" value="{{ old('name') }}" placeholder="John Doe"
+                    class="w-full bg-white border @error('name') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium text-slate-900">
                 @error('name') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
             </div>
 
             <div id="clinicNameField" style="display:none">
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Clinic Name</label>
-                <input type="text" name="clinic_name" value="{{ old('clinic_name') }}" placeholder="Bright Smiles Dental"
-                    class="w-full bg-white border @error('clinic_name') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
+                <input type="text" id="clinicName" name="clinic_name" value="{{ old('clinic_name') }}" placeholder="Bright Smiles Dental"
+                    class="w-full bg-white border @error('clinic_name') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium text-slate-900">
                 @error('clinic_name') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
             </div>
 
@@ -79,10 +79,23 @@
                         placeholder="9XX XXX XXXX"
                         class="w-full bg-transparent px-4 py-3 text-sm outline-none font-medium text-slate-900 border-none focus:ring-0">
                 </div>
-                @error('phone') 
-                    <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> 
-                @enderror
+                @error('phone') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
             </div>
+
+            <div id="patientIdField">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Government ID (JPEG/PNG/PDF)</label>
+                <input type="file" id="govIdFile" name="government_id" 
+                    class="w-full bg-white border @error('government_id') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-2 text-xs focus:border-cyan-500 transition-all outline-none font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100">
+                @error('government_id') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
+            </div>
+
+            <div id="clinicPermitField" style="display:none">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Business Permit (JPEG/PNG/PDF)</label>
+                <input type="file" id="permitFile" name="business_permit" 
+                    class="w-full bg-white border @error('business_permit') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-2 text-xs focus:border-cyan-500 transition-all outline-none font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100">
+                @error('business_permit') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
@@ -98,7 +111,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Confirm Password</label>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Confirm</label>
                     <input type="password" id="confirmPasswordInput" name="password_confirmation" placeholder="••••••••"
                         class="w-full bg-white border border-slate-100 rounded-xl px-4 py-3 text-sm focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all outline-none font-medium">
                 </div>
@@ -124,12 +137,6 @@
                 </ul>
             </div>
 
-            @error('password') 
-                <p class="text-[8px] text-red-500 font-bold ml-1 uppercase tracking-tighter">
-                    {{ $message }}
-                </p> 
-            @enderror
-
             <label class="flex items-start gap-3 text-[11px] text-slate-400 mb-6 cursor-pointer group">
                 <input type="checkbox" name="terms" required class="accent-cyan-500 w-4 h-4 mt-0.5 rounded-lg border-slate-200">
                 <span class="leading-tight group-hover:text-slate-600 transition-colors">
@@ -150,8 +157,8 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Toggle Password Visibility
     function togglePassword(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
@@ -164,27 +171,30 @@
         }
     }
 
-    //  Role Switcher
     function setRole(role) {
         document.getElementById('roleInput').value = role;
         const patientTab = document.getElementById('tab-patient');
         const clinicTab = document.getElementById('tab-clinic');
+        
         const nameField = document.getElementById('nameField');
         const clinicNameField = document.getElementById('clinicNameField');
-        const clinicProfileNotice = document.getElementById('clinicProfileNotice');
+        const patientIdField = document.getElementById('patientIdField');
+        const clinicPermitField = document.getElementById('clinicPermitField');
 
         if (role === 'patient') {
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
             nameField.style.display = 'block';
+            patientIdField.style.display = 'block';
             clinicNameField.style.display = 'none';
-            clinicProfileNotice.style.display = 'none';
+            clinicPermitField.style.display = 'none';
         } else {
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
             nameField.style.display = 'none';
+            patientIdField.style.display = 'none';
             clinicNameField.style.display = 'block';
-            clinicProfileNotice.style.display = 'block';
+            clinicPermitField.style.display = 'block';
         }
     }
 
@@ -207,14 +217,13 @@
         });
     }
 
-    // Password Real-time Validation & Matching
+    // Password Validation
     const passInput = document.getElementById('passwordInput');
     const confirmInput = document.getElementById('confirmPasswordInput');
 
     function validatePasswords() {
         const val = passInput.value;
         const confVal = confirmInput.value;
-        
         const rules = {
             'rule-length': val.length >= 8,
             'rule-upper': /[A-Z]/.test(val),
@@ -239,23 +248,44 @@
     passInput.addEventListener('input', validatePasswords);
     confirmInput.addEventListener('input', validatePasswords);
 
-    // State on Submit
     const form = document.getElementById('signupForm');
     const submitBtn = document.getElementById('submitBtn');
     const btnText = document.getElementById('btnText');
     const loader = document.getElementById('loader');
 
-    form.addEventListener('submit', function() {
+    form.addEventListener('submit', function(e) {
+        const role = document.getElementById('roleInput').value;
+        
+        // STRICT CLEARING
+        if (role === 'patient') {
+            document.getElementById('clinicName').value = "";
+            document.getElementById('permitFile').value = "";
+        } else {
+            // DILI MO FILL IN SA PATIENT KUNG CLINIC ANG ROLE
+            document.getElementById('patientName').value = "";
+            document.getElementById('govIdFile').value = "";
+        }
+
         submitBtn.disabled = true;
         submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
         btnText.innerText = 'Creating Account...';
         loader.classList.remove('hidden');
     });
 
-    window.onload = function() {
-        const currentRole = document.getElementById('roleInput').value;
-        setRole(currentRole);
-    }
+    // SUCCESS MESSAGE LOGIC
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Sign Up Successful!',
+            text: 'Your account has been created successfully. You can now log in.',
+            confirmButtonColor: '#06b6d4',
+            confirmButtonText: 'Go to Login'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ route('login') }}";
+            }
+        });
+    @endif
 </script>
 @endpush
 @endsection

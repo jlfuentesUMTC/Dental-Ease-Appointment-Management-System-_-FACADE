@@ -12,8 +12,11 @@ use App\Http\Controllers\VideoConsultationController;
 // PUBLIC ROUTES
 Route::get('/', fn() => view('landing'))->name('home');
 Route::get('/get-started', fn() => view('get-started'))->name('get-started');
+
+// LOGIN ROUTES 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
 Route::get('/register', function () {
     $clinics = \App\Models\User::query()
         ->where('role', 'clinic')
@@ -28,20 +31,16 @@ Route::post('/register', [AuthController::class, 'register']);
 // OTP PASSWORD RESET ROUTES (UPDATED TO OTP FLOW)
 // ==============================================================================
 
-// 1. LOADS THE FORGOT PASSWORD PAGE (WHERE USER ENTERS EMAIL)
 Route::get('/forgot-password', function() {
     return view('auth.forgot-password');
 })->middleware('guest')->name('password.request');
 
-// 2. TRIGGER SENDING THE 6-DIGIT OTP CODE TO GMAIL
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->middleware('guest')->name('password.email');
 
-// 3. LOADS THE PAGE TO ENTER THE OTP CODE AND NEW PASSWORD
 Route::get('/reset-password', function() {
     return view('auth.reset-password');
 })->middleware('guest')->name('password.reset');
 
-// 4. SAVES THE NEW PASSWORD AFTER VERIFYING THE OTP CODE
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest')->name('password.update');
 
 // ==============================================================================
@@ -50,11 +49,12 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middle
 Route::get('/signup', fn() => view('signup'))->name('signup');
 Route::post('/signup', [AuthController::class, 'register'])->name('signup.post');
 
+// LOGOUT ROUTE 
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-    return view('logout');
+    return redirect()->route('login'); 
 })->name('logout');
 
 Route::post('/notifications/read', [NotificationController::class, 'markAllRead'])
@@ -77,6 +77,10 @@ Route::get('/booking-confirmation', function () {
     return view('booking-confirmation', compact('appointment'));
 })->name('booking.confirmation');
 
+Route::post('/notifications/read', [NotificationController::class, 'markAllRead'])
+    ->middleware('auth')
+    ->name('notifications.read');
+
 // PATIENT ROUTES (PROTECTED BY AUTH)
 Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])->group(function () {
     Route::get('/dashboard', function () {
@@ -87,8 +91,10 @@ Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])
 
         return view('patient.dashboard', compact('appointments'));
     })->name('dashboard');
+    
     Route::get('/appointments', [AppointmentController::class, 'patientIndex'])->name('appointments');
     Route::post('/appointments', [AppointmentController::class, 'storePatient'])->name('appointments.store');
+    
     Route::get('/records', function () {
         $appointments = \App\Models\Appointment::query()
             ->where('patient_id', Auth::id())
@@ -97,6 +103,7 @@ Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])
 
         return view('patient.records', compact('appointments'));
     })->name('records');
+    
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'patient'])->name('video-call');
     Route::get('/video-call-ended', [VideoConsultationController::class, 'patientEnded'])->name('video-call.ended');
 });
@@ -118,9 +125,11 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
 
         return view('clinic.dashboard', compact('appointments'));
     })->name('dashboard');
+    
     Route::get('/appointments', [AppointmentController::class, 'clinicIndex'])->name('appointments');
     Route::patch('/appointments/{appointment}/approve', [AppointmentController::class, 'approve'])->name('appointments.approve');
     Route::patch('/appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
+    
     Route::get('/records', function () {
         $clinic = Auth::user();
         $appointments = \App\Models\Appointment::query()
@@ -136,6 +145,7 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
 
         return view('clinic.records', compact('appointments'));
     })->name('records');
+    
     Route::get('/profile', [ClinicProfileController::class, 'edit'])->name('profile');
     Route::patch('/profile', [ClinicProfileController::class, 'update'])->name('profile.update');
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'clinic'])->name('video-call');
@@ -145,10 +155,7 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->g
 
 // OTHER PUBLIC PAGES
 Route::get('/story', fn() => view('story'))->name('story');
-
-
 Route::get('/pricing', [ClinicProfileController::class, 'showPricing'])->name('pricing');
-
 Route::get('/contact', fn() => view('contact'))->name('contact');
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
 Route::get('/learn-more', function () {
