@@ -6,6 +6,7 @@ use App\Events\AppNotificationCreated;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 class AppNotification extends Model
 {
@@ -28,7 +29,14 @@ class AppNotification extends Model
     protected static function booted(): void
     {
         static::created(function (AppNotification $notification): void {
-            broadcast(new AppNotificationCreated($notification));
+            try {
+                broadcast(new AppNotificationCreated($notification));
+            } catch (\Throwable $exception) {
+                Log::warning('Realtime notification broadcast failed.', [
+                    'notification_id' => $notification->id,
+                    'message' => $exception->getMessage(),
+                ]);
+            }
         });
     }
 
