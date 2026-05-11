@@ -96,6 +96,13 @@
                 @error('business_permit') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
             </div>
 
+            <div id="clinicImageField" style="display:none">
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Clinic Image (JPEG/PNG)</label>
+                <input type="file" id="clinicImageFile" name="clinic_image"
+                    class="w-full bg-white border @error('clinic_image') border-red-500 @else border-slate-100 @enderror rounded-xl px-4 py-2 text-xs focus:border-cyan-500 transition-all outline-none font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100">
+                @error('clinic_image') <p class="text-[9px] text-red-500 font-bold mt-1 ml-1 uppercase">{{ $message }}</p> @enderror
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
@@ -180,6 +187,7 @@
         const clinicNameField = document.getElementById('clinicNameField');
         const patientIdField = document.getElementById('patientIdField');
         const clinicPermitField = document.getElementById('clinicPermitField');
+        const clinicImageField = document.getElementById('clinicImageField');
 
         if (role === 'patient') {
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
@@ -188,6 +196,7 @@
             patientIdField.style.display = 'block';
             clinicNameField.style.display = 'none';
             clinicPermitField.style.display = 'none';
+            clinicImageField.style.display = 'none';
         } else {
             clinicTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all bg-white text-cyan-600 shadow-sm';
             patientTab.className = 'flex-1 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all text-slate-400 hover:text-slate-600';
@@ -195,8 +204,11 @@
             patientIdField.style.display = 'none';
             clinicNameField.style.display = 'block';
             clinicPermitField.style.display = 'block';
+            clinicImageField.style.display = 'block';
         }
     }
+
+    setRole(document.getElementById('roleInput').value);
 
     // Phone Formatting
     const phoneInput = document.getElementById('phoneInput');
@@ -260,6 +272,7 @@
         if (role === 'patient') {
             document.getElementById('clinicName').value = "";
             document.getElementById('permitFile').value = "";
+            document.getElementById('clinicImageFile').value = "";
         } else {
             // DILI MO FILL IN SA PATIENT KUNG CLINIC ANG ROLE
             document.getElementById('patientName').value = "";

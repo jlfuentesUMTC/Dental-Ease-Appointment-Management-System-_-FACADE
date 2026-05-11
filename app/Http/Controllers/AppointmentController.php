@@ -22,6 +22,7 @@ class AppointmentController extends Controller
 
         $clinics = User::query()
             ->where('role', 'clinic')
+            ->where('verification_status', 'approved')
             ->orderBy('name')
             ->get(['id', 'name', 'clinic_services']);
 
@@ -77,6 +78,11 @@ class AppointmentController extends Controller
 
     public function approve(Appointment $appointment): RedirectResponse
     {
+        $clinic = Auth::user();
+
+        abort_unless($clinic?->role === 'clinic' && $clinic->verification_status === 'approved', 403);
+        abort_unless($appointment->clinic_id === $clinic->id || ($appointment->clinic_id === null && $appointment->clinic_name === $clinic->name), 403);
+
         $appointment->update(['status' => 'confirmed']);
 
         if ($appointment->patient_id) {
@@ -130,6 +136,20 @@ class AppointmentController extends Controller
         $clinic = isset($validated['clinic_id'])
             ? User::query()->where('role', 'clinic')->find($validated['clinic_id'])
             : null;
+
+        if ($user && $user->role === 'patient' && $user->verification_status !== 'approved') {
+            back()
+                ->withErrors(['clinic' => 'Your patient account must be approved before booking appointments.'])
+                ->withInput()
+                ->throwResponse();
+        }
+
+        if ($clinic && $clinic->verification_status !== 'approved') {
+            back()
+                ->withErrors(['clinic' => 'Please choose a verified clinic.'])
+                ->withInput()
+                ->throwResponse();
+        }
 
         if ($clinic && !$this->clinicOffersService($clinic, $validated['service'])) {
             back()

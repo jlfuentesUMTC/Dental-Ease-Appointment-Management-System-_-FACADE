@@ -48,6 +48,12 @@ class VideoConsultationController extends Controller
 
     public function clinic(Request $request, ?Appointment $appointment = null): RedirectResponse|View
     {
+        if ($request->user()->verification_status !== 'approved') {
+            return redirect()
+                ->route('clinic.appointments')
+                ->with('status', 'Your clinic account must be approved before starting video consultations.');
+        }
+
         $appointment ??= Appointment::query()
             ->where(function ($query) use ($request) {
                 $query->where('clinic_id', $request->user()->id)
@@ -93,6 +99,7 @@ class VideoConsultationController extends Controller
 
     public function markClinicStarted(Request $request, Appointment $appointment): JsonResponse
     {
+        abort_unless($request->user()->verification_status === 'approved', 403);
         abort_unless($this->belongsToClinic($appointment, $request->user()), 403);
         abort_unless($appointment->type === 'Telehealth' && $appointment->status === 'confirmed', 403);
 

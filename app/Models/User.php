@@ -24,6 +24,12 @@ class User extends Authenticatable
         'phone',
         'password',
         'role',
+        'verification_status',
+        'government_id_path',
+        'business_permit_path',
+        'clinic_image_path',
+        'verification_notes',
+        'verified_at',
         'clinic_location',
         'clinic_hours',
         'clinic_services',
@@ -52,6 +58,17 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'clinic_services' => 'array',
+            'verified_at' => 'datetime',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->verification_status === 'approved';
     }
 }

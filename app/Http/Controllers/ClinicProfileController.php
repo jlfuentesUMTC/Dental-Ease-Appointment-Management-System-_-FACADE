@@ -61,7 +61,9 @@ class ClinicProfileController extends Controller
     public function showPricing(): View
     {
      
-        $registeredClinics = User::where('role', 'clinic')->get();
+        $registeredClinics = User::where('role', 'clinic')
+            ->where('verification_status', 'approved')
+            ->get();
 
        
         return view('pricing', compact('registeredClinics'));

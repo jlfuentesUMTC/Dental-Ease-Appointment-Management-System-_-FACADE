@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'DENTAL EASE')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -50,6 +51,13 @@
             to { opacity: 1; }
         }
     </style>
+    @auth
+        <script>
+            window.DentalEaseUser = {
+                id: @json(Auth::id()),
+            };
+        </script>
+    @endauth
     @stack('styles')
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800 antialiased">

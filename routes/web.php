@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth; 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ClinicProfileController;
@@ -20,6 +21,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', function () {
     $clinics = \App\Models\User::query()
         ->where('role', 'clinic')
+        ->where('verification_status', 'approved')
         ->orderBy('name')
         ->get(['id', 'name', 'clinic_services']);
 
@@ -61,6 +63,36 @@ Route::post('/notifications/read', [NotificationController::class, 'markAllRead'
     ->middleware('auth')
     ->name('notifications.read');
 
+Route::get('/verification-status', function () {
+    $user = Auth::user();
+
+    if ($user?->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+
+    if ($user?->verification_status === 'approved') {
+        return $user->role === 'clinic'
+            ? redirect()->route('clinic.dashboard')
+            : redirect()->route('patient.dashboard');
+    }
+
+    return view('auth.verification-status', compact('user'));
+})->middleware('auth')->name('verification.status');
+Route::patch('/verification-status/resubmit', [AuthController::class, 'resubmitVerification'])
+    ->middleware('auth')
+    ->name('verification.resubmit');
+
+// ADMIN ROUTES
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/verifications', [AdminController::class, 'verifications'])->name('verifications');
+    Route::patch('/verifications/{user}/approve', [AdminController::class, 'approve'])->name('verifications.approve');
+    Route::patch('/verifications/{user}/reject', [AdminController::class, 'reject'])->name('verifications.reject');
+    Route::get('/clinics', [AdminController::class, 'clinics'])->name('clinics');
+    Route::get('/patients', [AdminController::class, 'patients'])->name('patients');
+    Route::get('/appointments', [AdminController::class, 'appointments'])->name('appointments');
+});
+
 // GUEST APPOINTMENT BOOKING
 Route::post('/go-calendar', [AppointmentController::class, 'storeGuest'])->name('appointments.guest.store');
 
@@ -82,7 +114,7 @@ Route::post('/notifications/read', [NotificationController::class, 'markAllRead'
     ->name('notifications.read');
 
 // PATIENT ROUTES (PROTECTED BY AUTH)
-Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])->group(function () {
+Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient', 'verified.user:patient'])->group(function () {
     Route::get('/dashboard', function () {
         $appointments = \App\Models\Appointment::query()
             ->where('patient_id', Auth::id())
@@ -109,7 +141,7 @@ Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient'])
 });
 
 // CLINIC ROUTES (PROTECTED BY AUTH)
-Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic'])->group(function () {
+Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic', 'verified.user:clinic'])->group(function () {
     Route::get('/dashboard', function () {
         $clinic = Auth::user();
         $appointments = \App\Models\Appointment::query()

@@ -56,7 +56,7 @@
                     'experience' => 'Registered',
                     'rating' => '5.0',
                     'tags' => ['Registered Clinic', 'Dental Ease Partner', 'Accepts Bookings'],
-                    'image' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=200',
+                    'image' => $clinic->clinic_image_path ? Storage::url($clinic->clinic_image_path) : 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80&w=200',
                     'services' => $services,
                 ];
             })->values()->all();
