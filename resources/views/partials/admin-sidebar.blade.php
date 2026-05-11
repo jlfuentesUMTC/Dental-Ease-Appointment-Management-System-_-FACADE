@@ -7,10 +7,32 @@
     $adminUnreadCount = $adminNotifications->whereNull('read_at')->count();
 @endphp
 
-<aside class="bg-slate-950 text-white lg:min-h-screen lg:w-72">
-    <div class="p-6 border-b border-white/10">
-        <div class="text-2xl font-black uppercase tracking-tight font-display">Dental <span class="text-cyan-400">Ease</span></div>
-        <div class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-1">Admin Panel</div>
+<button type="button" id="adminSidebarToggle"
+    class="fixed left-4 top-4 z-[70] flex h-11 w-11 items-center justify-center rounded-xl bg-slate-950 text-white shadow-xl transition hover:bg-cyan-600 lg:left-[17rem] lg:top-6 lg:h-10 lg:w-10 lg:rounded-full"
+    aria-label="Toggle admin sidebar">
+    <svg class="h-5 w-5 lg:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+    <svg id="adminSidebarArrow" class="hidden h-5 w-5 transition-transform lg:block lg:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+    </svg>
+</button>
+
+<div id="adminSidebarOverlay" class="fixed inset-0 z-40 hidden bg-slate-950/50 lg:hidden"></div>
+
+<aside id="adminSidebar" class="fixed inset-y-0 left-0 z-50 w-72 -translate-x-full bg-slate-950 text-white transition-transform duration-300 lg:sticky lg:top-0 lg:min-h-screen lg:translate-x-0">
+    <div class="p-6 pl-16 border-b border-white/10">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <div class="text-2xl font-black uppercase tracking-tight font-display">Dental <span class="text-cyan-400">Ease</span></div>
+                <div class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-1">Admin Panel</div>
+            </div>
+            <button type="button" id="adminSidebarClose" class="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden" aria-label="Hide admin sidebar">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <nav class="p-4 grid gap-2">
@@ -68,3 +90,71 @@
         </button>
     </form>
 </aside>
+
+<script>
+    (function () {
+        const sidebar = document.getElementById('adminSidebar');
+        const overlay = document.getElementById('adminSidebarOverlay');
+        const toggle = document.getElementById('adminSidebarToggle');
+        const arrow = document.getElementById('adminSidebarArrow');
+        const close = document.getElementById('adminSidebarClose');
+
+        if (!sidebar || !overlay || !toggle || !close) return;
+
+        function isDesktop() {
+            return window.matchMedia('(min-width: 1024px)').matches;
+        }
+
+        function syncDesktopToggle() {
+            if (!isDesktop()) {
+                toggle.classList.remove('lg:left-4');
+                toggle.classList.add('lg:left-[17rem]');
+                return;
+            }
+
+            const isHidden = sidebar.classList.contains('hidden');
+            toggle.classList.toggle('lg:left-4', isHidden);
+            toggle.classList.toggle('lg:left-[17rem]', !isHidden);
+            arrow?.classList.toggle('lg:rotate-180', !isHidden);
+        }
+
+        function openSidebar() {
+            sidebar.classList.remove('-translate-x-full', 'hidden');
+            overlay.classList.toggle('hidden', isDesktop());
+            syncDesktopToggle();
+        }
+
+        function closeSidebar() {
+            if (isDesktop()) {
+                sidebar.classList.add('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+            syncDesktopToggle();
+        }
+
+        toggle.addEventListener('click', () => {
+            if (sidebar.classList.contains('hidden') || sidebar.classList.contains('-translate-x-full')) {
+                openSidebar();
+            } else {
+                closeSidebar();
+            }
+        });
+
+        close.addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        window.addEventListener('resize', () => {
+            overlay.classList.add('hidden');
+            if (isDesktop()) {
+                sidebar.classList.remove('-translate-x-full');
+            } else if (!sidebar.classList.contains('hidden')) {
+                sidebar.classList.add('-translate-x-full');
+            }
+            syncDesktopToggle();
+        });
+
+        syncDesktopToggle();
+    })();
+</script>

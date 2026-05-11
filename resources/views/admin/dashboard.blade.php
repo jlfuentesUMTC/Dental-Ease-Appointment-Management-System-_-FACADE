@@ -5,7 +5,7 @@
 <div class="min-h-screen bg-slate-100 lg:flex">
     @include('partials.admin-sidebar')
 
-    <main class="flex-1 p-4 sm:p-8">
+    <main class="flex-1 p-4 pt-20 sm:p-8 lg:pt-8">
         @if(session('status'))
             <div class="mb-6 bg-cyan-50 border border-cyan-100 text-cyan-700 rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-widest">{{ session('status') }}</div>
         @endif

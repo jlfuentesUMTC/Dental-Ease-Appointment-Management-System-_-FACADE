@@ -47,7 +47,13 @@
             </a>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <button type="button" id="clinicMobileMenuButton" class="md:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 text-slate-500 hover:bg-slate-50 hover:text-cyan-500 transition" aria-label="Open clinic menu">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+
             <details class="relative group">
                 <summary class="list-none cursor-pointer relative p-2 text-slate-400 hover:text-cyan-500 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
@@ -90,9 +96,36 @@
                 @csrf
             <button type="submit" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-all px-4 py-2 border border-slate-100 rounded-xl hover:border-red-100 hover:bg-red-50">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                Logout
+                <span class="hidden sm:inline">Logout</span>
             </button>
             </form>
         </div>
     </div>
+
+    <div id="clinicMobileMenu" class="hidden border-t border-slate-100 bg-white px-4 py-3 md:hidden">
+        <div class="grid gap-2">
+            <a href="{{ route('clinic.dashboard') }}"
+                class="px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ request()->routeIs('clinic.dashboard') ? 'bg-cyan-500 text-white' : 'text-slate-500 bg-slate-50' }}">
+                Overview
+            </a>
+            <a href="{{ route('clinic.appointments') }}"
+                class="px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ request()->routeIs('clinic.appointments') ? 'bg-cyan-500 text-white' : 'text-slate-500 bg-slate-50' }}">
+                Schedules
+            </a>
+            <a href="{{ route('clinic.records') }}"
+                class="px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ request()->routeIs('clinic.records') ? 'bg-cyan-500 text-white' : 'text-slate-500 bg-slate-50' }}">
+                Patients
+            </a>
+            <a href="{{ route('clinic.profile') }}"
+                class="px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ request()->routeIs('clinic.profile*') ? 'bg-cyan-500 text-white' : 'text-slate-500 bg-slate-50' }}">
+                Profile
+            </a>
+        </div>
+    </div>
 </nav>
+
+<script>
+document.getElementById('clinicMobileMenuButton')?.addEventListener('click', function () {
+    document.getElementById('clinicMobileMenu')?.classList.toggle('hidden');
+});
+</script>

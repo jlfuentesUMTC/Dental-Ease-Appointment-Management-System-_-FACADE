@@ -47,7 +47,13 @@
             </a>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <button type="button" id="patientMobileMenuButton" class="md:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-slate-100 text-slate-500 hover:bg-slate-50 hover:text-cyan-500 transition" aria-label="Open patient menu">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+
             <details class="relative group">
                 <summary class="list-none cursor-pointer relative p-2 text-slate-400 hover:text-cyan-500 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
@@ -115,9 +121,30 @@
 </div>
         </div>
     </div>
+
+    <div id="patientMobileMenu" class="hidden border-t border-slate-100 bg-white px-4 py-3 md:hidden">
+        <div class="grid gap-2">
+            <a href="{{ route('patient.dashboard') }}"
+                class="px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ request()->routeIs('patient.dashboard') ? 'bg-cyan-500 text-white' : 'text-slate-500 bg-slate-50' }}">
+                Dashboard
+            </a>
+            <a href="{{ route('patient.appointments') }}"
+                class="px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ request()->routeIs('patient.appointments') ? 'bg-cyan-500 text-white' : 'text-slate-500 bg-slate-50' }}">
+                Appointments
+            </a>
+            <a href="{{ route('patient.records') }}"
+                class="px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ request()->routeIs('patient.records') ? 'bg-cyan-500 text-white' : 'text-slate-500 bg-slate-50' }}">
+                Records
+            </a>
+        </div>
+    </div>
 </nav>
 
 <script>
+document.getElementById('patientMobileMenuButton')?.addEventListener('click', function () {
+    document.getElementById('patientMobileMenu')?.classList.toggle('hidden');
+});
+
 function toggleDropdown() {
     const dropdown = document.getElementById('profileDropdown');
     dropdown.classList.toggle('hidden');

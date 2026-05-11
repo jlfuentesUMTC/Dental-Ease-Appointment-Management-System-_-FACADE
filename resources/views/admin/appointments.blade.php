@@ -5,7 +5,7 @@
 <div class="min-h-screen bg-slate-100 lg:flex">
     @include('partials.admin-sidebar')
 
-    <main class="flex-1 p-4 sm:p-8">
+    <main class="flex-1 p-4 pt-20 sm:p-8 lg:pt-8">
         <p class="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-600">System Activity</p>
         <h1 class="font-display text-4xl font-black uppercase tracking-tight text-slate-950 mb-6">Appointments</h1>
 
