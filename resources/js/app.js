@@ -18,6 +18,7 @@ if (reverbKey) {
 }
 
 const currentUserId = window.DentalEaseUser?.id;
+let refreshInFlight = false;
 
 if (window.Echo && currentUserId) {
     window.Echo.private(`App.Models.User.${currentUserId}`)
@@ -25,8 +26,14 @@ if (window.Echo && currentUserId) {
             incrementNotificationBadges();
             prependNotification(event);
             showNotificationToast(event);
+            refreshRealtimeSections(event);
+        })
+        .listen('.appointment.changed', (event) => {
+            refreshRealtimeSections(event);
         });
 }
+
+startRealtimeFallbackSync();
 
 function incrementNotificationBadges() {
     document.querySelectorAll('[data-notification-count]').forEach((badge) => {
@@ -66,6 +73,95 @@ function showNotificationToast(notification) {
     window.setTimeout(() => {
         toast.remove();
     }, 5000);
+}
+
+async function refreshRealtimeSections(notification) {
+    if (!document.querySelector('[data-realtime-section], [data-notification-list]')) {
+        return;
+    }
+
+    if (refreshInFlight) {
+        return;
+    }
+
+    refreshInFlight = true;
+
+    try {
+        const response = await fetch(window.location.href, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        const html = await response.text();
+        const nextDocument = new DOMParser().parseFromString(html, 'text/html');
+
+        refreshNotificationElements(nextDocument);
+
+        document.querySelectorAll('[data-realtime-section]').forEach((section) => {
+            const name = section.dataset.realtimeSection;
+            const nextSection = nextDocument.querySelector(`[data-realtime-section="${CSS.escape(name)}"]`);
+
+            if (nextSection && section.innerHTML.trim() !== nextSection.innerHTML.trim()) {
+                section.innerHTML = nextSection.innerHTML;
+
+                if (notification?.source !== 'fallback-sync') {
+                    section.classList.add('fade-in-soft');
+                    window.setTimeout(() => section.classList.remove('fade-in-soft'), 500);
+                }
+            }
+        });
+
+        window.dispatchEvent(new CustomEvent('dentalease:realtime-sections-refreshed', {
+            detail: notification,
+        }));
+    } catch (error) {
+        console.warn('Realtime section refresh failed.', error);
+    } finally {
+        refreshInFlight = false;
+    }
+}
+
+function refreshNotificationElements(nextDocument) {
+    document.querySelectorAll('[data-notification-count]').forEach((badge, index) => {
+        const nextBadge = nextDocument.querySelectorAll('[data-notification-count]')[index];
+
+        if (nextBadge && badge.outerHTML !== nextBadge.outerHTML) {
+            badge.textContent = nextBadge.textContent;
+            badge.className = nextBadge.className;
+        }
+    });
+
+    document.querySelectorAll('[data-notification-list]').forEach((list) => {
+        const href = list.dataset.notificationHref;
+        const selector = href
+            ? `[data-notification-list][data-notification-href="${CSS.escape(href)}"]`
+            : '[data-notification-list]';
+        const nextList = nextDocument.querySelector(selector);
+
+        if (nextList && list.innerHTML.trim() !== nextList.innerHTML.trim()) {
+            list.innerHTML = nextList.innerHTML;
+        }
+    });
+}
+
+function startRealtimeFallbackSync() {
+    if (!document.querySelector('[data-realtime-section], [data-notification-list]')) {
+        return;
+    }
+
+    window.setInterval(() => {
+        if (document.hidden) {
+            return;
+        }
+
+        refreshRealtimeSections({ source: 'fallback-sync' });
+    }, 2500);
 }
 
 function escapeHtml(value) {

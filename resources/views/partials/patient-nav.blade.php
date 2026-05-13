@@ -57,11 +57,9 @@
             <details class="relative group">
                 <summary class="list-none cursor-pointer relative p-2 text-slate-400 hover:text-cyan-500 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-                    @if($unreadCount > 0)
-                    <span class="absolute top-1 right-1 min-w-4 h-4 px-1 bg-cyan-500 text-white text-[8px] font-black rounded-full border-2 border-white flex items-center justify-center">{{ $unreadCount }}</span>
-                    @endif
+                    <span data-notification-count class="{{ $unreadCount > 0 ? '' : 'hidden' }} absolute top-1 right-1 min-w-4 h-4 px-1 bg-cyan-500 text-white text-[8px] font-black rounded-full border-2 border-white flex items-center justify-center">{{ $unreadCount }}</span>
                 </summary>
-                <div class="absolute right-0 mt-3 w-80 max-w-[calc(100vw-2rem)] bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden z-50">
+                <div class="fixed left-3 right-3 top-20 max-h-[calc(100vh-6rem)] bg-white border border-slate-100 rounded-2xl shadow-2xl overflow-hidden z-50 sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-80 sm:max-w-[calc(100vw-2rem)]">
                     <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
                         <span class="text-[10px] font-black uppercase tracking-widest text-slate-900">Notifications</span>
                         @if($unreadCount > 0)
@@ -71,7 +69,7 @@
                         </form>
                         @endif
                     </div>
-                    <div class="max-h-80 overflow-y-auto">
+                    <div class="max-h-[60vh] sm:max-h-80 overflow-y-auto" data-notification-list data-notification-href="{{ route('patient.appointments') }}">
                         @forelse($notifications as $notification)
                         <div class="px-4 py-3 border-b border-slate-50 {{ $notification->read_at ? 'bg-white' : 'bg-cyan-50/60' }}">
                             <div class="text-[10px] font-black uppercase tracking-widest text-slate-900">{{ $notification->title }}</div>
@@ -79,7 +77,7 @@
                             <div class="text-[9px] text-slate-300 font-black uppercase tracking-widest mt-2">{{ $notification->created_at->diffForHumans() }}</div>
                         </div>
                         @empty
-                        <div class="px-4 py-8 text-center text-[10px] font-black uppercase tracking-widest text-slate-300">No notifications</div>
+                        <div data-notification-empty class="px-4 py-8 text-center text-[10px] font-black uppercase tracking-widest text-slate-300">No notifications</div>
                         @endforelse
                     </div>
                 </div>

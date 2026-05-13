@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10" data-realtime-section="patient-dashboard-stats">
             @php
             $stats = [
                 ['value'=>str_pad($upcomingAppointments->count(), 2, '0', STR_PAD_LEFT),'label'=>'Upcoming','svg'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
@@ -74,7 +74,7 @@
                         <a href="{{ route('patient.records') }}" class="text-sm font-black uppercase tracking-widest text-cyan-600 border-b-2 border-cyan-50 hover:border-cyan-500 transition-all">Full History</a>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-4" data-realtime-section="patient-dashboard-active">
                         @forelse($upcomingAppointments->take(3) as $appointment)
                         <div class="flex flex-col sm:flex-row sm:items-center gap-6 p-6 bg-slate-50/50 border-2 border-transparent hover:border-cyan-100 hover:bg-white rounded-3xl transition-all group">
                             <div class="w-20 h-20 bg-white rounded-2xl shadow-sm flex flex-col items-center justify-center border border-slate-100 flex-shrink-0">
@@ -90,7 +90,7 @@
                             </div>
                             <div class="flex items-center">
                                 <span class="{{ $appointment->status === 'confirmed' ? 'bg-cyan-500' : 'bg-slate-300' }} text-white text-xs font-black uppercase tracking-[0.2em] px-8 py-4 rounded-xl shadow-lg shadow-cyan-100/50">
-                                    {{ ucfirst($appointment->status) }}
+                                    {{ $appointment->status === 'confirmed' ? 'Waiting for Clinic' : ucfirst($appointment->status) }}
                                 </span>
                             </div>
                         </div>
@@ -107,12 +107,13 @@
             <div class="flex flex-col gap-8">
                 <div class="bg-white border-2 border-slate-50 rounded-[2.5rem] p-8 shadow-sm">
                     <h2 class="font-display text-sm font-black text-slate-900 uppercase tracking-widest mb-8">Queue Status</h2>
+                    <div data-realtime-section="patient-dashboard-queue">
                     @if($nextAppointment)
                     <div class="flex items-center gap-5 p-6 bg-cyan-50/50 rounded-2xl border-2 border-cyan-100">
                         <div class="w-14 h-14 bg-cyan-500 rounded-xl flex items-center justify-center text-white font-black text-xl">01</div>
                         <div>
                             <div class="text-base font-black text-slate-900 uppercase tracking-tight">{{ ucwords(str_replace('-', ' ', $nextAppointment->service)) }}</div>
-                            <div class="text-xs font-black text-cyan-600 uppercase tracking-widest mt-1">{{ ucfirst($nextAppointment->status) }} - {{ $nextAppointment->appointment_date->format('M j') }}</div>
+                            <div class="text-xs font-black text-cyan-600 uppercase tracking-widest mt-1">{{ $nextAppointment->status === 'confirmed' ? 'Waiting for Clinic' : ucfirst($nextAppointment->status) }} - {{ $nextAppointment->appointment_date->format('M j') }}</div>
                         </div>
                     </div>
                     @else
@@ -120,6 +121,7 @@
                         No queue item.
                     </div>
                     @endif
+                    </div>
                 </div>
 
                 <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-slate-300">
@@ -127,7 +129,7 @@
                         <div class="w-6 h-1.5 bg-cyan-400 rounded-full"></div>
                         <span class="font-black text-xs uppercase tracking-widest text-slate-400">Record Summary</span>
                     </div>
-                    <div class="space-y-6">
+                    <div class="space-y-6" data-realtime-section="patient-dashboard-record-summary">
                         <div class="flex justify-between text-sm uppercase font-black tracking-widest text-slate-300">
                             <span>Pending Requests</span>
                             <span class="text-cyan-400">{{ $pendingAppointments->count() }}</span>

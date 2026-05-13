@@ -15,10 +15,17 @@ class AppointmentController extends Controller
 {
     public function patientIndex(): View
     {
-        $appointments = Appointment::query()
-            ->when(Auth::check(), fn ($query) => $query->where('patient_id', Auth::id()))
+        $appointmentQuery = Appointment::query()
+            ->when(Auth::check(), fn ($query) => $query->where('patient_id', Auth::id()));
+
+        $appointmentSummary = (clone $appointmentQuery)
             ->latestBooked()
             ->get();
+
+        $appointments = $appointmentQuery
+            ->latestBooked()
+            ->paginate(10)
+            ->withQueryString();
 
         $clinics = User::query()
             ->where('role', 'clinic')
@@ -26,7 +33,7 @@ class AppointmentController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'clinic_services']);
 
-        return view('patient.appointments', compact('appointments', 'clinics'));
+        return view('patient.appointments', compact('appointments', 'appointmentSummary', 'clinics'));
     }
 
     public function clinicIndex(): View
@@ -42,7 +49,8 @@ class AppointmentController extends Controller
                     });
             })
             ->latestBooked()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('clinic.appointments', compact('appointments'));
     }

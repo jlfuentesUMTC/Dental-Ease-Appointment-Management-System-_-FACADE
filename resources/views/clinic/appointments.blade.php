@@ -4,6 +4,11 @@
 @section('content')
 @include('partials.clinic-nav')
 
+@php
+    $appointmentItems = $appointments instanceof \Illuminate\Contracts\Pagination\Paginator ? $appointments->getCollection() : collect($appointments);
+    $appointmentTotal = method_exists($appointments, 'total') ? $appointments->total() : $appointmentItems->count();
+@endphp
+
 <div class="min-h-screen bg-slate-50 relative overflow-hidden">
     <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-cyan-100/20 rounded-full blur-[100px] -z-10"></div>
 
@@ -37,7 +42,7 @@
             </div>
         </div>
 
-        <div class="bg-cyan-500 rounded-2xl p-4 mb-6 text-white flex items-center justify-between shadow-lg shadow-cyan-100">
+        <div class="bg-cyan-500 rounded-2xl p-4 mb-6 text-white flex items-center justify-between shadow-lg shadow-cyan-100" data-realtime-section="clinic-appointments-summary">
             <div class="flex items-center gap-4">
                 <div class="bg-white/20 p-2 rounded-lg text-white">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -48,13 +53,14 @@
                 </div>
             </div>
             <div class="text-right">
-                <div class="text-2xl font-black leading-none">{{ str_pad($appointments->count(), 2, '0', STR_PAD_LEFT) }}</div>
+                <div class="text-2xl font-black leading-none">{{ str_pad($appointmentTotal, 2, '0', STR_PAD_LEFT) }}</div>
                 <div class="text-[8px] font-black uppercase tracking-widest text-cyan-100">Bookings</div>
             </div>
         </div>
 
-        <div class="space-y-2">
-            @forelse($appointments as $apt)
+        <div data-realtime-section="clinic-appointments-list">
+            <div class="space-y-2">
+            @forelse($appointmentItems as $apt)
             <div class="bg-white border border-slate-100 rounded-2xl p-4 hover:border-cyan-200 transition-all group" data-title="{{ strtolower($apt->patient_name . ' ' . $apt->service . ' ' . $apt->clinic_name) }}">
                 <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                     <div class="flex items-center gap-4 flex-1">
@@ -111,6 +117,13 @@
                 No appointment requests yet.
             </div>
             @endforelse
+            </div>
+
+            @if($appointments instanceof \Illuminate\Contracts\Pagination\Paginator && $appointments->hasPages())
+            <div class="mt-6">
+                {{ $appointments->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>

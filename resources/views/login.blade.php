@@ -17,7 +17,7 @@
             </a>
             <div class="hidden md:flex items-center gap-12">
                 <a href="{{ route('get-started') }}" class="text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-cyan-500 transition-colors font-display">Back</a>
-                <a href="{{ route('register') }}" class="bg-slate-900 text-white text-xs font-black uppercase tracking-[0.2em] px-8 py-3 rounded-xl hover:bg-cyan-500 transition-all shadow-lg shadow-slate-200 font-display">Sign Up</a>
+                <a href="{{ route('register') }}" class="bg-slate-900 text-white text-xs font-black uppercase tracking-[0.2em] px-8 py-3 rounded-xl hover:bg-cyan-500 transition-all shadow-lg shadow-slate-200 font-display">Join Now</a>
             </div>
         </div>
     </div>
@@ -88,7 +88,7 @@
         </form>
 
         <p class="text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-8">
-            Don't have an account? <a href="{{ route('register') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Join now</a>
+            Don't have an account? <a href="{{ route('signup') }}" class="text-cyan-600 hover:text-cyan-700 underline underline-offset-4">Sign up</a>
         </p>
     </div>
 </div>

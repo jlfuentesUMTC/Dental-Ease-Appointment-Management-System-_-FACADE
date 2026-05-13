@@ -5,7 +5,9 @@
 @include('partials.patient-nav')
 
 @php
-    $nextAppointment = $appointments->where('appointment_date', '>=', now()->startOfDay())->sortBy('appointment_date')->first();
+    $appointmentItems = $appointments instanceof \Illuminate\Contracts\Pagination\Paginator ? $appointments->getCollection() : collect($appointments);
+    $summaryAppointments = isset($appointmentSummary) ? collect($appointmentSummary) : $appointmentItems;
+    $nextAppointment = $summaryAppointments->where('appointment_date', '>=', now()->startOfDay())->sortBy('appointment_date')->first();
     $clinicServicePayload = collect($clinics ?? [])->mapWithKeys(function ($clinic) {
         $rawServices = is_string($clinic->clinic_services)
             ? json_decode($clinic->clinic_services, true)
@@ -49,7 +51,7 @@
             </button>
         </div>
 
-        <div class="bg-cyan-500 rounded-2xl p-4 mb-6 text-white flex items-center justify-between shadow-lg shadow-cyan-100">
+        <div class="bg-cyan-500 rounded-2xl p-4 mb-6 text-white flex items-center justify-between shadow-lg shadow-cyan-100" data-realtime-section="patient-appointments-summary">
             <div class="flex items-center gap-4">
                 <div class="bg-white/20 p-2 rounded-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -60,15 +62,16 @@
                 </div>
             </div>
             <div class="text-right">
-                <div class="text-2xl font-black leading-none">{{ str_pad($appointments->where('status', 'pending')->count(), 2, '0', STR_PAD_LEFT) }}</div>
+                <div class="text-2xl font-black leading-none">{{ str_pad($summaryAppointments->where('status', 'pending')->count(), 2, '0', STR_PAD_LEFT) }}</div>
                 <div class="text-[8px] font-black uppercase tracking-widest text-cyan-100">Pending</div>
             </div>
         </div>
 
-        <div class="space-y-2">
-            @forelse($appointments as $apt)
+        <div data-realtime-section="patient-appointments-list">
+            <div class="space-y-2">
+            @forelse($appointmentItems as $apt)
             <div class="bg-white border border-slate-100 rounded-2xl p-4 hover:border-cyan-200 transition-all group" data-title="{{ strtolower($apt->service . ' ' . $apt->clinic_name) }}">
-                <div class="flex items-center gap-5">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
                     <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-colors flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
@@ -85,7 +88,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2 sm:justify-end">
                         @if($apt->status === 'confirmed' && $apt->type === 'Telehealth')
                             @php
                                 $consultationStarted = \App\Models\VideoConsultation::query()
@@ -109,7 +112,7 @@
                             {{ $apt->status == 'confirmed' ? 'bg-cyan-50 text-cyan-600' : '' }}
                             {{ $apt->status == 'declined' ? 'bg-red-50 text-red-500' : '' }}
                             {{ $apt->status == 'pending' ? 'bg-slate-100 text-slate-400' : '' }}">
-                            {{ ucfirst($apt->status) }}
+                            {{ $apt->status === 'confirmed' ? 'Waiting for Clinic' : ucfirst($apt->status) }}
                         </span>
                     </div>
                 </div>
@@ -119,6 +122,13 @@
                 No appointments yet.
             </div>
             @endforelse
+            </div>
+
+            @if($appointments instanceof \Illuminate\Contracts\Pagination\Paginator && $appointments->hasPages())
+            <div class="mt-6">
+                {{ $appointments->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>

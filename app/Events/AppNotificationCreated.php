@@ -29,12 +29,21 @@ class AppNotificationCreated implements ShouldBroadcastNow
 
     public function broadcastWith(): array
     {
+        $appointment = $this->notification->appointment;
+
         return [
             'id' => $this->notification->id,
             'title' => $this->notification->title,
             'message' => $this->notification->message,
             'type' => $this->notification->type,
             'created_at' => $this->notification->created_at?->diffForHumans() ?? 'Just now',
+            'appointment' => $appointment ? [
+                'id' => $appointment->id,
+                'status' => $appointment->status,
+                'clinic_id' => $appointment->clinic_id,
+                'patient_id' => $appointment->patient_id,
+                'updated_at' => $appointment->updated_at?->toIso8601String(),
+            ] : null,
         ];
     }
 }
