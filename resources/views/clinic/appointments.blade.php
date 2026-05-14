@@ -32,12 +32,13 @@
                 <input type="text" id="searchInput" oninput="filterAppointments(this.value)" placeholder="SEARCH PATIENTS..." class="bg-transparent outline-none text-[10px] font-black uppercase tracking-widest text-slate-900 placeholder-slate-300 w-full">
             </div>
 
-            <div class="flex bg-slate-50 p-1 rounded-xl gap-1">
-                @foreach(['Daily','Weekly','Monthly'] as $i => $view)
-                <button onclick="switchView({{ $i }})" id="viewTab-{{ $i }}"
-                    class="{{ $i===0 ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600' }} text-[9px] font-black uppercase tracking-widest px-5 py-2 rounded-lg transition-all whitespace-nowrap">
+            <div class="flex flex-wrap bg-slate-50 p-1 rounded-xl gap-1">
+                @foreach(['all' => 'All', 'pending' => 'Pending', 'approved' => 'Approved', 'declined' => 'Declined'] as $key => $view)
+                <a href="{{ route('clinic.appointments', ['status' => $key]) }}"
+                    class="{{ ($activeStatus ?? 'all') === $key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600' }} text-[9px] font-black uppercase tracking-widest px-5 py-2 rounded-lg transition-all whitespace-nowrap">
                     {{ $view }}
-                </button>
+                    <span class="ml-1 text-[8px] {{ ($activeStatus ?? 'all') === $key ? 'text-cyan-600' : 'text-slate-300' }}">{{ $statusCounts[$key] ?? 0 }}</span>
+                </a>
                 @endforeach
             </div>
         </div>
@@ -48,8 +49,8 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 </div>
                 <div>
-                    <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100 leading-none mb-1">Active Ledger</h2>
-                    <div class="text-lg font-black uppercase tracking-tight">Today - {{ now()->format('F j, Y') }}</div>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-100 leading-none mb-1">Schedules Filter</h2>
+                    <div class="text-lg font-black uppercase tracking-tight">{{ strtoupper($activeStatus ?? 'all') }} - {{ now()->format('F j, Y') }}</div>
                 </div>
             </div>
             <div class="text-right">
@@ -130,15 +131,6 @@
 
 @push('scripts')
 <script>
-    function switchView(index) {
-        const tabs = document.querySelectorAll('[id^="viewTab-"]');
-        tabs.forEach((tab, i) => {
-            tab.className = i === index
-                ? 'bg-white text-slate-900 shadow-sm text-[9px] font-black uppercase tracking-widest px-5 py-2 rounded-lg transition-all whitespace-nowrap'
-                : 'text-slate-400 hover:text-slate-600 text-[9px] font-black uppercase tracking-widest px-5 py-2 rounded-lg transition-all whitespace-nowrap';
-        });
-    }
-
     function filterAppointments(query) {
         const q = query.toLowerCase();
         document.querySelectorAll('[data-title]').forEach(card => {

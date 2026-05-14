@@ -36,23 +36,44 @@ class AppointmentController extends Controller
         return view('patient.appointments', compact('appointments', 'appointmentSummary', 'clinics'));
     }
 
-    public function clinicIndex(): View
+    public function clinicIndex(Request $request): View
     {
         $clinic = Auth::user();
 
-        $appointments = Appointment::query()
+        $activeStatus = $request->query('status', 'all');
+        $statusMap = [
+            'pending' => 'pending',
+            'approved' => 'confirmed',
+            'declined' => 'declined',
+        ];
+
+        if (! array_key_exists($activeStatus, $statusMap) && $activeStatus !== 'all') {
+            $activeStatus = 'all';
+        }
+
+        $baseQuery = Appointment::query()
             ->where(function ($query) use ($clinic) {
                 $query->where('clinic_id', $clinic->id)
                     ->orWhere(function ($legacyQuery) use ($clinic) {
                         $legacyQuery->whereNull('clinic_id')
                             ->where('clinic_name', $clinic->name);
                     });
-            })
+            });
+
+        $statusCounts = [
+            'all' => (clone $baseQuery)->count(),
+            'pending' => (clone $baseQuery)->where('status', 'pending')->count(),
+            'approved' => (clone $baseQuery)->where('status', 'confirmed')->count(),
+            'declined' => (clone $baseQuery)->where('status', 'declined')->count(),
+        ];
+
+        $appointments = $baseQuery
+            ->when($activeStatus !== 'all', fn ($query) => $query->where('status', $statusMap[$activeStatus]))
             ->latestBooked()
             ->paginate(10)
             ->withQueryString();
 
-        return view('clinic.appointments', compact('appointments'));
+        return view('clinic.appointments', compact('appointments', 'activeStatus', 'statusCounts'));
     }
 
     public function storeGuest(Request $request): RedirectResponse
@@ -109,6 +130,11 @@ class AppointmentController extends Controller
 
     public function decline(Appointment $appointment): RedirectResponse
     {
+        $clinic = Auth::user();
+
+        abort_unless($clinic?->role === 'clinic' && $clinic->verification_status === 'approved', 403);
+        abort_unless($appointment->clinic_id === $clinic->id || ($appointment->clinic_id === null && $appointment->clinic_name === $clinic->name), 403);
+
         $appointment->update(['status' => 'declined']);
 
         if ($appointment->patient_id) {

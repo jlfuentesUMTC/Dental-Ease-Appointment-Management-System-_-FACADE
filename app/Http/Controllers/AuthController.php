@@ -165,10 +165,15 @@ class AuthController extends Controller
     // LOGOUT LOGIC 
     public function logout(Request $request)
     {
+        $role = Auth::user()?->role;
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login');
+
+        return response()->view('logout', [
+            'role' => $role,
+        ]);
     }
 
     // ==============================================================================

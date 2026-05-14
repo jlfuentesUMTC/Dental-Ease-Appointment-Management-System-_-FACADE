@@ -5,11 +5,12 @@
 @include('partials.clinic-nav')
 
 @php
-    $patients = $appointments
+    $patients = isset($patients) ? collect($patients) : $appointments
         ->groupBy(fn($appointment) => $appointment->patient_id ?: strtolower($appointment->patient_email))
         ->map(function ($patientAppointments) {
             $latest = $patientAppointments->sortByDesc('appointment_date')->first();
             return [
+                'route_key' => $latest->patient_id ? 'user-' . $latest->patient_id : 'guest-' . $latest->id,
                 'id' => $latest->patient_id ? 'PAT-' . str_pad((string) $latest->patient_id, 4, '0', STR_PAD_LEFT) : 'GUEST-' . str_pad((string) $latest->id, 4, '0', STR_PAD_LEFT),
                 'name' => $latest->patient_name,
                 'email' => $latest->patient_email,
@@ -17,6 +18,8 @@
                 'last_visit' => $latest->appointment_date->format('M j, Y'),
                 'status' => $patientAppointments->contains('status', 'pending') ? 'Pending' : ($patientAppointments->contains('status', 'confirmed') ? 'Active' : 'Completed'),
                 'count' => $patientAppointments->count(),
+                'in_clinic_count' => $patientAppointments->where('type', 'In-Clinic')->count(),
+                'telehealth_count' => $patientAppointments->where('type', 'Telehealth')->count(),
             ];
         })
         ->values();
@@ -77,7 +80,9 @@
                             <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Patient Name</th>
                             <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Contact Info</th>
                             <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Last Activity</th>
-                            <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Visits</th>
+                            <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">In-Clinic</th>
+                            <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Telehealth</th>
+                            <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Total</th>
                             <th class="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                         </tr>
                     </thead>
@@ -92,7 +97,10 @@
                                     <div class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white text-[10px] font-black group-hover:bg-cyan-500 transition-colors">
                                         {{ substr($patient['name'], 0, 1) }}
                                     </div>
-                                    <span class="text-sm font-black text-slate-900 uppercase tracking-tight">{{ $patient['name'] }}</span>
+                                    <a href="{{ route('clinic.records.history', $patient['route_key']) }}"
+                                       class="text-sm font-black text-slate-900 uppercase tracking-tight decoration-cyan-400 underline-offset-4 hover:underline hover:text-cyan-600 transition-colors">
+                                        {{ $patient['name'] }}
+                                    </a>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
@@ -100,6 +108,16 @@
                                 <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $patient['phone'] }}</div>
                             </td>
                             <td class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">{{ $patient['last_visit'] }}</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg">
+                                    {{ $patient['in_clinic_count'] }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center bg-cyan-50 text-cyan-600 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg">
+                                    {{ $patient['telehealth_count'] }}
+                                </span>
+                            </td>
                             <td class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">{{ $patient['count'] }}</td>
                             <td class="px-6 py-4">
                                 <span class="text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg {{ $patient['status'] === 'Pending' ? 'bg-orange-50 text-orange-600' : 'bg-emerald-50 text-emerald-600' }}">
@@ -109,7 +127,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-10 text-center text-xs font-black uppercase tracking-widest text-slate-300">No patients yet.</td>
+                            <td colspan="8" class="px-6 py-10 text-center text-xs font-black uppercase tracking-widest text-slate-300">No patients yet.</td>
                         </tr>
                         @endforelse
                     </tbody>

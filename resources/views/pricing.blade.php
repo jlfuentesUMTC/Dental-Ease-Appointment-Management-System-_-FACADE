@@ -3,13 +3,19 @@
 
 @section('content')
 
+@php
+    $returnToProfile = auth()->check() && auth()->user()->role === 'clinic' && request('from') === 'clinic-profile';
+    $backRoute = $returnToProfile ? route('clinic.profile') : route('home');
+    $backLabel = $returnToProfile ? 'Back to Profile' : 'Back to Home';
+@endphp
+
 <div class="max-w-7xl mx-auto px-4 pt-6">
-    <a href="{{ route('home') }}"
+    <a href="{{ $backRoute }}"
        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 shadow-sm text-xs font-black uppercase tracking-[0.2em] text-slate-500 hover:bg-cyan-500 hover:text-white hover:border-cyan-500 transition-all duration-300 group">
         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
-        Back to Home
+        {{ $backLabel }}
     </a>
 </div>
 

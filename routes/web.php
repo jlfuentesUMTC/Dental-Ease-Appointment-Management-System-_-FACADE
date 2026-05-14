@@ -17,7 +17,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/signup', fn() => view('signup'))->name('signup');
 Route::post('/signup', [AuthController::class, 'register'])->name('signup.post');
-Route::post('/logout', function () { Auth::logout(); request()->session()->invalidate(); request()->session()->regenerateToken(); return redirect()->route('login'); })->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/register', function () {
     $clinics = \App\Models\User::where('role', 'clinic')->where('verification_status', 'approved')->orderBy('name')->get(['id', 'name', 'clinic_services']);

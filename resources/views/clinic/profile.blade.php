@@ -47,7 +47,7 @@
                 <h1 class="font-display text-4xl font-black text-slate-900 uppercase tracking-tight mt-2">Clinic Profile</h1>
                 <p class="text-sm font-semibold text-slate-500 mt-2">Manage your public identity and location mapping.</p>
             </div>
-            <a href="{{ route('pricing') }}" class="inline-flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:text-cyan-600 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+            <a href="{{ route('pricing', ['from' => 'clinic-profile']) }}" class="inline-flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:text-cyan-600 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
                 View Pricing Page
             </a>
         </div>

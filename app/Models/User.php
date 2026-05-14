@@ -6,6 +6,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -70,5 +71,15 @@ class User extends Authenticatable
     public function isVerified(): bool
     {
         return $this->verification_status === 'approved';
+    }
+
+    public function patientAppointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'patient_id');
+    }
+
+    public function clinicAppointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class, 'clinic_id');
     }
 }

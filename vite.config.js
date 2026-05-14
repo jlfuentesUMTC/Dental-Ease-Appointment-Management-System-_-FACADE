@@ -13,8 +13,7 @@ export default defineConfig({
     server: {
         https: false, 
         host: '0.0.0.0', 
-        hmr: {
-            host: 'localhost', 
-        },
+        // Let Vite use the page host so phones on the LAN do not request assets from localhost.
+        hmr: true,
     },
 });
