@@ -2,6 +2,8 @@
 @section('title', 'Clinic Pricing - DENTAL EASE')
 
 @section('content')
+{{-- Leaflet CSS remains necessary as an external library link --}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 @php
     $returnToProfile = auth()->check() && auth()->user()->role === 'clinic' && request('from') === 'clinic-profile';
@@ -44,18 +46,12 @@
                     'price' => $service['price'] ?? 'Contact clinic',
                 ])->values()->all();
 
-                $hasCoordinates = filled($clinic->latitude) && filled($clinic->longitude);
-                $mapQuery = $hasCoordinates
-                    ? "{$clinic->latitude},{$clinic->longitude}"
-                    : trim(($clinic->clinic_location ?: '') . ' ' . ($clinic->name ?: ''));
-
                 return [
                     'id' => $clinic->id,
                     'name' => $clinic->clinic_name ?? $clinic->name,
                     'location' => $clinic->clinic_location ?: 'Clinic location not provided',
-                    'lat' => $clinic->latitude,
-                    'lng' => $clinic->longitude,
-                    'map_query' => $mapQuery,
+                    'lat' => $clinic->latitude ?? 7.4477,
+                    'lng' => $clinic->longitude ?? 125.8093,
                     'landmark' => $clinic->landmark ?: 'Registered Dental Ease clinic',
                     'phone' => $clinic->phone ?: 'Contact number not provided',
                     'hours' => $clinic->clinic_hours ?: 'Clinic hours not provided',
@@ -153,30 +149,15 @@
                     </div>
 
                     <div class="flex-grow bg-slate-100 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden relative shadow-inner border-4 border-slate-50 min-h-[480px]">
-                        <iframe
-                            width="100%"
-                            height="100%"
-                            frameborder="0"
-                            style="border:0"
-                            src="https://maps.google.com/maps?q={{ urlencode($clinic['map_query']) }}+({{ urlencode($clinic['name']) }})&t=&z=17&ie=UTF8&iwloc=B&output=embed"
-                            allowfullscreen>
-                        </iframe>
-                        <button onclick="togglePricing({{ $index }})" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full flex flex-col items-center gap-2 group">
-                            <span class="relative flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white shadow-2xl ring-4 ring-white transition-transform group-hover:scale-110">
-                                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-60"></span>
-                                <svg class="relative w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.69 18.933l.003.002.007.003.016.006a.75.75 0 00.568 0l.016-.006.007-.003.003-.002.002-.001a1.75 1.75 0 00.219-.122 17.9 17.9 0 002.724-2.198C14.71 15.23 16.5 12.933 16.5 10a6.5 6.5 0 10-13 0c0 2.933 1.79 5.23 3.245 6.612a17.9 17.9 0 002.724 2.198 1.75 1.75 0 00.219.122l.002.001zM10 12.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
-                            </span>
-                            <span class="bg-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-800 shadow-lg border border-slate-100 max-w-[240px] truncate">
-                                {{ $clinic['name'] }}
-                            </span>
-                        </button>
+                        {{-- Added Tailwind sizing and z-index directly to the div --}}
+                        <div id="map-{{ $index }}" class="w-full h-full z-[1]"></div>
                     </div>
 
                     <div class="mt-4 px-2 flex justify-between items-center gap-3">
                          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
                             <span class="text-cyan-500">Address:</span> {{ $clinic['location'] }}
                          </p>
-                         <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($clinic['map_query']) }}"
+                         <a href="https://www.google.com/maps/dir/?api=1&destination={{ $clinic['lat'] }},{{ $clinic['lng'] }}"
                             target="_blank"
                             class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-cyan-500 hover:text-white transition-colors">
                             Directions
@@ -184,6 +165,7 @@
                     </div>
                 </div>
 
+                {{-- Replaced custom scrollbar class with Tailwind scrollbar utility classes --}}
                 <div id="pricing-layer-{{ $index }}" class="absolute inset-0 bg-white/98 backdrop-blur-md p-10 sm:p-14 transform translate-y-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col z-30">
                     <div class="flex items-center justify-between mb-8 border-b-2 border-slate-50 pb-6 flex-shrink-0">
                         <div>
@@ -198,7 +180,8 @@
                         </div>
                     </div>
 
-                    <div class="space-y-5 flex-grow overflow-y-auto pr-4 custom-scrollbar">
+                    {{-- Scrollbar logic moved to Tailwind classes --}}
+                    <div class="space-y-5 flex-grow overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-slate-50 hover:scrollbar-thumb-cyan-500">
                         @foreach($clinic['services'] as $service)
                         <div class="flex justify-between items-end gap-6 group/item border-b border-slate-50 pb-3 hover:translate-x-1 transition-transform">
                             <span class="text-base font-bold text-slate-700 group-hover/item:text-cyan-600 transition-colors">{{ $service['name'] }}</span>
@@ -227,7 +210,42 @@
     </div>
 </section>
 
+{{-- Leaflet JS and Logic --}}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+    const clinicMaps = {};
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const clinics = @json($clinics);
+        
+        {{-- Custom red glow animation implemented via Leaflet className using Tailwind-style arbitrary values --}}
+        const redGlowIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            {{-- We use Tailwind's arbitrary class support here --}}
+            className: 'animate-[pulse-red_2s_infinite] [filter:drop-shadow(0_0_10px_rgba(255,0,0,0.9))]',
+            iconSize: [30, 48], iconAnchor: [15, 48], popupAnchor: [1, -34]
+        });
+
+        {{-- Note: For the animation to work properly without a <style> block, you must define 'pulse-red' in your tailwind.config.js or keep the keyframe in a global CSS file. --}}
+
+        clinics.forEach((clinic, index) => {
+            const mapId = `map-${index}`;
+            const mapElement = document.getElementById(mapId);
+            
+            if (mapElement) {
+                const map = L.map(mapId).setView([clinic.lat, clinic.lng], 18);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+                L.marker([clinic.lat, clinic.lng], { icon: redGlowIcon }).addTo(map)
+                    .bindPopup(`<div style="text-align:center;"><b style="color:#0891b2;">${clinic.name.toUpperCase()}</b><br><small>${clinic.location.toUpperCase()}</small></div>`)
+                    .openPopup();
+
+                clinicMaps[index] = map;
+            }
+        });
+    });
+
     function togglePricing(index) {
         const layer = document.getElementById(`pricing-layer-${index}`);
         const btn = document.getElementById(`main-btn-${index}`);
@@ -256,15 +274,13 @@
             stats.style.opacity = '1';
             details.style.opacity = '1';
             card.classList.remove('shadow-2xl', 'shadow-cyan-200/40');
+            
+            if (clinicMaps[index]) {
+                setTimeout(() => {
+                    clinicMaps[index].invalidateSize();
+                }, 500);
+            }
         }
     }
 </script>
-
-<style>
-    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
-</style>
-
 @endsection
