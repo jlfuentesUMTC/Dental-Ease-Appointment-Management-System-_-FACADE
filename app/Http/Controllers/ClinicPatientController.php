@@ -82,13 +82,7 @@ class ClinicPatientController extends Controller
         $clinic = Auth::user();
 
         return Appointment::query()
-            ->where(function ($query) use ($clinic) {
-                $query->where('clinic_id', $clinic->id)
-                    ->orWhere(function ($legacyQuery) use ($clinic) {
-                        $legacyQuery->whereNull('clinic_id')
-                            ->where('clinic_name', $clinic->name);
-                    });
-            });
+            ->forClinic($clinic);
     }
 
     private function buildPatientLedger($appointments)

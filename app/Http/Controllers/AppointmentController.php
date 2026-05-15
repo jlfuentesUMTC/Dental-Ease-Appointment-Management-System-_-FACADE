@@ -16,6 +16,7 @@ class AppointmentController extends Controller
     public function patientIndex(): View
     {
         $appointmentQuery = Appointment::query()
+            ->with(['videoConsultation', 'clinic'])
             ->when(Auth::check(), fn ($query) => $query->where('patient_id', Auth::id()));
 
         $appointmentSummary = (clone $appointmentQuery)
@@ -52,13 +53,8 @@ class AppointmentController extends Controller
         }
 
         $baseQuery = Appointment::query()
-            ->where(function ($query) use ($clinic) {
-                $query->where('clinic_id', $clinic->id)
-                    ->orWhere(function ($legacyQuery) use ($clinic) {
-                        $legacyQuery->whereNull('clinic_id')
-                            ->where('clinic_name', $clinic->name);
-                    });
-            });
+            ->with(['videoConsultation', 'clinic'])
+            ->forClinic($clinic);
 
         $statusCounts = [
             'all' => (clone $baseQuery)->count(),
@@ -67,13 +63,19 @@ class AppointmentController extends Controller
             'declined' => (clone $baseQuery)->where('status', 'declined')->count(),
         ];
 
+        $typeCounts = [
+            'all' => (clone $baseQuery)->count(),
+            'In-Clinic' => (clone $baseQuery)->where('type', 'In-Clinic')->count(),
+            'Telehealth' => (clone $baseQuery)->where('type', 'Telehealth')->count(),
+        ];
+
         $appointments = $baseQuery
             ->when($activeStatus !== 'all', fn ($query) => $query->where('status', $statusMap[$activeStatus]))
             ->latestBooked()
             ->paginate(10)
-            ->withQueryString();
+            ->appends(['status' => $activeStatus]);
 
-        return view('clinic.appointments', compact('appointments', 'activeStatus', 'statusCounts'));
+        return view('clinic.appointments', compact('appointments', 'activeStatus', 'statusCounts', 'typeCounts'));
     }
 
     public function storeGuest(Request $request): RedirectResponse
@@ -110,7 +112,7 @@ class AppointmentController extends Controller
         $clinic = Auth::user();
 
         abort_unless($clinic?->role === 'clinic' && $clinic->verification_status === 'approved', 403);
-        abort_unless($appointment->clinic_id === $clinic->id || ($appointment->clinic_id === null && $appointment->clinic_name === $clinic->name), 403);
+        abort_unless($appointment->belongsToClinic($clinic), 403);
 
         $appointment->update(['status' => 'confirmed']);
 
@@ -133,7 +135,7 @@ class AppointmentController extends Controller
         $clinic = Auth::user();
 
         abort_unless($clinic?->role === 'clinic' && $clinic->verification_status === 'approved', 403);
-        abort_unless($appointment->clinic_id === $clinic->id || ($appointment->clinic_id === null && $appointment->clinic_name === $clinic->name), 403);
+        abort_unless($appointment->belongsToClinic($clinic), 403);
 
         $appointment->update(['status' => 'declined']);
 
@@ -163,7 +165,7 @@ class AppointmentController extends Controller
             'date' => ['required', 'date', 'after_or_equal:today'],
             'time' => ['nullable', 'date_format:H:i'],
             'type' => ['nullable', 'in:In-Clinic,Telehealth'],
-            'notes' => ['nullable', 'string', 'max:2000'],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $user = Auth::user();

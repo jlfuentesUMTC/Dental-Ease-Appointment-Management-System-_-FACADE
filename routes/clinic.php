@@ -10,7 +10,8 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic', 've
     Route::get('/dashboard', function () {
         $clinic = Auth::user();
         $appointments = \App\Models\Appointment::query()
-            ->where(fn($q) => $q->where('clinic_id', $clinic->id)->orWhere(fn($lq) => $lq->whereNull('clinic_id')->where('clinic_name', $clinic->name)))
+            ->with('videoConsultation')
+            ->forClinic($clinic)
             ->latestBooked()->get();
         return view('clinic.dashboard', compact('appointments'));
     })->name('dashboard');
@@ -26,5 +27,6 @@ Route::prefix('clinic')->name('clinic.')->middleware(['auth', 'role:clinic', 've
     Route::patch('/profile', [ClinicProfileController::class, 'update'])->name('profile.update');
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'clinic'])->name('video-call');
     Route::post('/video-call/{appointment}/started', [VideoConsultationController::class, 'markClinicStarted'])->name('video-call.started');
+    Route::post('/video-call/{appointment}/ended', [VideoConsultationController::class, 'markClinicEnded'])->name('video-call.ended.store');
     Route::get('/video-call-ended', [VideoConsultationController::class, 'clinicEnded'])->name('video-call.ended');
 });

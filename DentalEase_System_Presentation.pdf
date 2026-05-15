@@ -1,0 +1,489 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R 44 0 R] /Count 20 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Length 698 >>
+stream
+BT /F1 25 Tf 54 714 Td (DentalEase System Presentation) Tj ET
+BT /F2 13 Tf 54 683 Td (A Real-Time Dental Appointment and Clinic Management Platform) Tj ET
+BT /F1 11 Tf 54 653 Td (Prepared for system presentation and project defense) Tj ET
+BT /F1 11 Tf 54 637 Td (Project: DentalEase) Tj ET
+BT /F1 11 Tf 54 621 Td (Date: May 14, 2026) Tj ET
+BT /F1 11 Tf 54 595 Td (DentalEase is a web-based dental care management platform designed to make appointment) Tj ET
+BT /F1 11 Tf 54 579 Td (booking, clinic scheduling, patient communication, and administrative verification) Tj ET
+BT /F1 11 Tf 54 563 Td (easier, faster, and more organized.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 887 >>
+stream
+BT /F1 25 Tf 54 714 Td (System Overview) Tj ET
+BT /F1 11 Tf 54 683 Td (DentalEase provides a complete workflow for patients, clinics, and administrators.) Tj ET
+BT /F1 11 Tf 54 657 Td (- Patients can create accounts, book appointments, monitor appointment status, and) Tj ET
+BT /F1 11 Tf 54 641 Td (receive realtime updates.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Clinics can manage schedules, approve or decline appointments, receive instant) Tj ET
+BT /F1 11 Tf 54 609 Td (notifications, and start telehealth sessions.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Administrators can verify clinic and patient accounts and monitor system activity.) Tj ET
+BT /F1 11 Tf 54 567 Td (The system focuses on convenience, realtime communication, organized records, and a) Tj ET
+BT /F1 11 Tf 54 551 Td (cleaner experience for dental care services.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 7 0 R >>
+endobj
+9 0 obj
+<< /Length 975 >>
+stream
+BT /F1 25 Tf 54 714 Td (Problem Addressed) Tj ET
+BT /F1 11 Tf 54 683 Td (Traditional dental appointment management often depends on manual communication, phone) Tj ET
+BT /F1 11 Tf 54 667 Td (calls, delayed confirmations, and scattered records.) Tj ET
+BT /F2 12 Tf 54 641 Td (DentalEase addresses these common issues:) Tj ET
+BT /F1 11 Tf 54 625 Td (- Patients need a convenient way to request appointments online.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Clinics need immediate visibility when a new appointment request arrives.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Appointment status changes should not require manual page refreshes.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Clinics need a structured schedule management page.) Tj ET
+BT /F1 11 Tf 54 561 Td (- Patients need simple access to appointment updates and dental records.) Tj ET
+BT /F1 11 Tf 54 545 Td (- Administrators need a controlled verification process for users.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 9 0 R >>
+endobj
+11 0 obj
+<< /Length 1148 >>
+stream
+BT /F1 25 Tf 54 714 Td (User Roles) Tj ET
+BT /F1 11 Tf 54 683 Td (The system supports multiple user roles with different responsibilities.) Tj ET
+BT /F2 12 Tf 54 657 Td (Patient:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Registers and waits for account approval.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Books appointments with verified clinics.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Receives appointment notifications and status updates.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Views dashboard, appointments, and records.) Tj ET
+BT /F2 12 Tf 54 567 Td (Clinic:) Tj ET
+BT /F1 11 Tf 54 551 Td (- Registers and waits for admin verification.) Tj ET
+BT /F1 11 Tf 54 535 Td (- Receives new appointment requests.) Tj ET
+BT /F1 11 Tf 54 519 Td (- Approves or declines appointments.) Tj ET
+BT /F1 11 Tf 54 503 Td (- Manages schedules, patient records, and clinic profile.) Tj ET
+BT /F2 12 Tf 54 477 Td (Admin:) Tj ET
+BT /F1 11 Tf 54 461 Td (- Reviews account verification requests.) Tj ET
+BT /F1 11 Tf 54 445 Td (- Receives signup notifications.) Tj ET
+BT /F1 11 Tf 54 429 Td (- Manages and monitors platform activity.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 11 0 R >>
+endobj
+13 0 obj
+<< /Length 1238 >>
+stream
+BT /F1 25 Tf 54 714 Td (Implemented Core Features) Tj ET
+BT /F1 11 Tf 54 683 Td (- Landing page and Get Started flow.) Tj ET
+BT /F1 11 Tf 54 667 Td (- Patient, clinic, and admin authentication.) Tj ET
+BT /F1 11 Tf 54 651 Td (- Signup and login pages with correct route behavior.) Tj ET
+BT /F1 11 Tf 54 635 Td (- Verification status workflow for patient and clinic accounts.) Tj ET
+BT /F1 11 Tf 54 619 Td (- Clinic profile management and clinic services support.) Tj ET
+BT /F1 11 Tf 54 603 Td (- Guest booking and authenticated patient booking.) Tj ET
+BT /F1 11 Tf 54 587 Td (- Patient dashboard, appointment page, and records page.) Tj ET
+BT /F1 11 Tf 54 571 Td (- Clinic dashboard, schedule management, records, and profile pages.) Tj ET
+BT /F1 11 Tf 54 555 Td (- Admin dashboard and verification notifications.) Tj ET
+BT /F1 11 Tf 54 539 Td (- Appointment approval and decline workflow.) Tj ET
+BT /F1 11 Tf 54 523 Td (- Telehealth/video consultation flow for supported appointments.) Tj ET
+BT /F1 11 Tf 54 507 Td (- Mobile responsive navigation and notification dropdown improvements.) Tj ET
+BT /F1 11 Tf 54 491 Td (- Pagination for long appointment and schedule lists.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 13 0 R >>
+endobj
+15 0 obj
+<< /Length 1083 >>
+stream
+BT /F1 25 Tf 54 714 Td (Appointment Booking Workflow) Tj ET
+BT /F1 11 Tf 54 683 Td (The booking process is one of the central features of DentalEase.) Tj ET
+BT /F2 12 Tf 54 657 Td (Patient booking flow:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Patient logs in to an approved account.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Patient opens the appointment page.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Patient selects clinic, service, appointment type, date, and time.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Appointment is created with Pending status.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Clinic receives a notification and sees the request in schedule management.) Tj ET
+BT /F2 12 Tf 54 551 Td (Clinic action flow:) Tj ET
+BT /F1 11 Tf 54 535 Td (- Clinic reviews pending appointment requests.) Tj ET
+BT /F1 11 Tf 54 519 Td (- Clinic can approve or decline the request.) Tj ET
+BT /F1 11 Tf 54 503 Td (- Patient receives a realtime notification.) Tj ET
+BT /F1 11 Tf 54 487 Td (- Patient appointment status updates automatically without manual refresh.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+16 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 15 0 R >>
+endobj
+17 0 obj
+<< /Length 976 >>
+stream
+BT /F1 25 Tf 54 714 Td (Appointment Status Handling) Tj ET
+BT /F2 12 Tf 54 683 Td (Implemented appointment statuses include:) Tj ET
+BT /F2 12 Tf 54 657 Td (Pending:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Initial status after a patient books an appointment.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Clinic can approve or decline this request.) Tj ET
+BT /F2 12 Tf 54 599 Td (Confirmed:) Tj ET
+BT /F1 11 Tf 54 583 Td (- Internal status after clinic approval.) Tj ET
+BT /F1 11 Tf 54 567 Td (- Patient-facing text displays as Waiting for Clinic for clearer communication.) Tj ET
+BT /F2 12 Tf 54 541 Td (Declined:) Tj ET
+BT /F1 11 Tf 54 525 Td (- Used when a clinic rejects an appointment request.) Tj ET
+BT /F1 11 Tf 54 509 Td (- Patient receives a notification and can choose another schedule.) Tj ET
+BT /F2 12 Tf 54 483 Td (Completed:) Tj ET
+BT /F1 11 Tf 54 467 Td (- Reserved for appointments that have already been finished.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+18 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 17 0 R >>
+endobj
+19 0 obj
+<< /Length 1265 >>
+stream
+BT /F1 25 Tf 54 714 Td (Realtime Integration) Tj ET
+BT /F1 11 Tf 54 683 Td (DentalEase integrates Laravel Reverb for realtime communication.) Tj ET
+BT /F2 12 Tf 54 657 Td (Implemented realtime technologies:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Laravel Reverb as the WebSocket server.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Laravel Echo as the frontend WebSocket client.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Pusher-compatible Reverb connection configuration.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Private user channels for secure user-specific events.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Realtime notification broadcast when app notifications are created.) Tj ET
+BT /F1 11 Tf 54 561 Td (- AppointmentChanged broadcast event for appointment create and update events.) Tj ET
+BT /F2 12 Tf 54 535 Td (Realtime behavior:) Tj ET
+BT /F1 11 Tf 54 519 Td (- Clinic receives updates when a patient books an appointment.) Tj ET
+BT /F1 11 Tf 54 503 Td (- Patient receives updates when clinic approves or declines.) Tj ET
+BT /F1 11 Tf 54 487 Td (- Dashboard and appointment sections refresh without a full page reload.) Tj ET
+BT /F1 11 Tf 54 471 Td (- A silent fallback sync supports reliability if a WebSocket connection is unstable.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+20 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 19 0 R >>
+endobj
+21 0 obj
+<< /Length 1143 >>
+stream
+BT /F1 25 Tf 54 714 Td (Notification System) Tj ET
+BT /F1 11 Tf 54 683 Td (The notification system was implemented to support user awareness and realtime updates.) Tj ET
+BT /F2 12 Tf 54 657 Td (Implemented notification features:) Tj ET
+BT /F1 11 Tf 54 641 Td (- AppNotification model for persistent notification records.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Notification creation for account signup, appointment submission, appointment) Tj ET
+BT /F1 11 Tf 54 609 Td (approval, and appointment decline.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Realtime notification broadcast through AppNotificationCreated event.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Notification bell badge updates.) Tj ET
+BT /F1 11 Tf 54 561 Td (- Dropdown notification list updates.) Tj ET
+BT /F1 11 Tf 54 545 Td (- Mobile notification dropdown improved for smaller screens.) Tj ET
+BT /F1 11 Tf 54 529 Td (- Mark all notifications as read action.) Tj ET
+BT /F1 11 Tf 54 503 Td (The notification system helps reduce missed appointment requests and keeps both patient) Tj ET
+BT /F1 11 Tf 54 487 Td (and clinic users informed.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+22 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 21 0 R >>
+endobj
+23 0 obj
+<< /Length 1056 >>
+stream
+BT /F1 25 Tf 54 714 Td (Clinic Side Features) Tj ET
+BT /F1 11 Tf 54 683 Td (The clinic side is designed for appointment and patient management.) Tj ET
+BT /F2 12 Tf 54 657 Td (Implemented clinic features:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Clinic dashboard with appointment statistics.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Today schedule panel.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Current queue panel.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Performance summary including confirmed, pending, and total bookings.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Schedule management page with search and schedule cards.) Tj ET
+BT /F1 11 Tf 54 561 Td (- Approve and decline appointment controls.) Tj ET
+BT /F1 11 Tf 54 545 Td (- Start Call button for confirmed telehealth appointments.) Tj ET
+BT /F1 11 Tf 54 529 Td (- Clinic records page grouped by patient activity.) Tj ET
+BT /F1 11 Tf 54 513 Td (- Clinic profile and service management.) Tj ET
+BT /F1 11 Tf 54 497 Td (- Schedule pagination set to 10 appointments per page.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+24 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 23 0 R >>
+endobj
+25 0 obj
+<< /Length 1012 >>
+stream
+BT /F1 25 Tf 54 714 Td (Patient Side Features) Tj ET
+BT /F1 11 Tf 54 683 Td (The patient side is focused on easy access and appointment visibility.) Tj ET
+BT /F2 12 Tf 54 657 Td (Implemented patient features:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Patient dashboard overview.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Upcoming appointment summary.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Active schedule section.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Queue status section.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Record summary section.) Tj ET
+BT /F1 11 Tf 54 561 Td (- Appointment booking modal.) Tj ET
+BT /F1 11 Tf 54 545 Td (- Clinic service selection based on chosen clinic.) Tj ET
+BT /F1 11 Tf 54 529 Td (- Calendar date picker for appointment date selection.) Tj ET
+BT /F1 11 Tf 54 513 Td (- Appointment list with status display.) Tj ET
+BT /F1 11 Tf 54 497 Td (- Patient records page.) Tj ET
+BT /F1 11 Tf 54 481 Td (- Appointment pagination set to 10 appointments per page.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+26 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 25 0 R >>
+endobj
+27 0 obj
+<< /Length 838 >>
+stream
+BT /F1 25 Tf 54 714 Td (Admin and Verification Features) Tj ET
+BT /F1 11 Tf 54 683 Td (The system includes administrative verification to improve platform trust and control.) Tj ET
+BT /F2 12 Tf 54 657 Td (Implemented admin-related features:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Admin dashboard.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Verification request handling.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Notifications for new patient or clinic signup.) Tj ET
+BT /F1 11 Tf 54 593 Td (- User account approval workflow.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Middleware checks for approved patient and clinic users.) Tj ET
+BT /F1 11 Tf 54 551 Td (Verification ensures that only approved clinics can receive bookings and only approved) Tj ET
+BT /F1 11 Tf 54 535 Td (patients can book appointments.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+28 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 27 0 R >>
+endobj
+29 0 obj
+<< /Length 915 >>
+stream
+BT /F1 25 Tf 54 714 Td (Mobile UI Improvements) Tj ET
+BT /F1 11 Tf 54 683 Td (The mobile interface was refined to make the system easier to use on smaller screens.) Tj ET
+BT /F2 12 Tf 54 657 Td (Implemented mobile improvements:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Responsive clinic and patient navigation.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Mobile menu buttons for role dashboards.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Notification dropdown converted into a full-width mobile panel.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Notification list made scrollable on small screens.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Appointment cards adjusted for mobile wrapping.) Tj ET
+BT /F1 11 Tf 54 561 Td (- Patient appointment controls adjusted to avoid overflow.) Tj ET
+BT /F1 11 Tf 54 535 Td (These improvements make important actions and notifications easier to access on phones.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+30 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 29 0 R >>
+endobj
+31 0 obj
+<< /Length 866 >>
+stream
+BT /F1 25 Tf 54 714 Td (Pagination Implementation) Tj ET
+BT /F1 11 Tf 54 683 Td (Pagination was added to improve performance and readability on pages with many) Tj ET
+BT /F1 11 Tf 54 667 Td (appointments.) Tj ET
+BT /F2 12 Tf 54 641 Td (Implemented pagination:) Tj ET
+BT /F1 11 Tf 54 625 Td (- Clinic schedule management page displays 10 appointments per page.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Patient appointment page displays 10 appointments per page.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Existing summary counts remain based on the appropriate appointment set.) Tj ET
+BT /F1 11 Tf 54 577 Td (- Pagination links preserve query strings.) Tj ET
+BT /F1 11 Tf 54 551 Td (This prevents long pages, improves scanning, and keeps the user interface cleaner as the) Tj ET
+BT /F1 11 Tf 54 535 Td (database grows.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+32 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 31 0 R >>
+endobj
+33 0 obj
+<< /Length 1038 >>
+stream
+BT /F1 25 Tf 54 714 Td (Technical Stack) Tj ET
+BT /F1 11 Tf 54 683 Td (DentalEase was implemented using modern Laravel and frontend tooling.) Tj ET
+BT /F2 12 Tf 54 657 Td (Backend:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Laravel PHP framework.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Eloquent models and relationships.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Blade templates.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Middleware for roles and verification.) Tj ET
+BT /F1 11 Tf 54 577 Td (- MySQL database configuration.) Tj ET
+BT /F2 12 Tf 54 551 Td (Realtime:) Tj ET
+BT /F1 11 Tf 54 535 Td (- Laravel Reverb.) Tj ET
+BT /F1 11 Tf 54 519 Td (- Laravel Echo.) Tj ET
+BT /F1 11 Tf 54 503 Td (- Pusher JS client compatibility.) Tj ET
+BT /F2 12 Tf 54 477 Td (Frontend:) Tj ET
+BT /F1 11 Tf 54 461 Td (- Blade views.) Tj ET
+BT /F1 11 Tf 54 445 Td (- Tailwind CSS utility styling.) Tj ET
+BT /F1 11 Tf 54 429 Td (- Vite build pipeline.) Tj ET
+BT /F1 11 Tf 54 413 Td (- Responsive layouts for desktop and mobile.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+34 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 33 0 R >>
+endobj
+35 0 obj
+<< /Length 1044 >>
+stream
+BT /F1 25 Tf 54 714 Td (Database and Model Structure) Tj ET
+BT /F1 11 Tf 54 683 Td (Key system data is organized through Laravel models and migrations.) Tj ET
+BT /F2 12 Tf 54 657 Td (Important models:) Tj ET
+BT /F1 11 Tf 54 641 Td (- User: stores patient, clinic, and admin users.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Appointment: stores appointment booking information and status.) Tj ET
+BT /F1 11 Tf 54 609 Td (- AppNotification: stores notification records for users.) Tj ET
+BT /F1 11 Tf 54 593 Td (- VideoConsultation: stores telehealth consultation information.) Tj ET
+BT /F2 12 Tf 54 567 Td (Important relationships:) Tj ET
+BT /F1 11 Tf 54 551 Td (- Appointment belongs to patient user.) Tj ET
+BT /F1 11 Tf 54 535 Td (- Appointment belongs to clinic user.) Tj ET
+BT /F1 11 Tf 54 519 Td (- AppNotification belongs to user.) Tj ET
+BT /F1 11 Tf 54 503 Td (- AppNotification may belong to appointment.) Tj ET
+BT /F1 11 Tf 54 487 Td (- Appointment may have one video consultation.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+36 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 35 0 R >>
+endobj
+37 0 obj
+<< /Length 979 >>
+stream
+BT /F1 25 Tf 54 714 Td (Security and Access Control) Tj ET
+BT /F1 11 Tf 54 683 Td (Security and access control were considered in the system implementation.) Tj ET
+BT /F2 12 Tf 54 657 Td (Implemented controls:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Authentication required for dashboards and protected pages.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Role-based route protection for admin, clinic, and patient areas.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Verification middleware for approved clinic and patient access.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Private realtime channels for user-specific notifications.) Tj ET
+BT /F1 11 Tf 54 577 Td (- CSRF protection on forms.) Tj ET
+BT /F1 11 Tf 54 561 Td (- Server-side validation for booking forms.) Tj ET
+BT /F1 11 Tf 54 545 Td (- Clinic service validation when booking appointments.) Tj ET
+BT /F1 11 Tf 54 529 Td (- Authorization checks before clinics approve or decline appointments.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+38 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 37 0 R >>
+endobj
+39 0 obj
+<< /Length 892 >>
+stream
+BT /F1 25 Tf 54 714 Td (Testing and Validation) Tj ET
+BT /F1 11 Tf 54 683 Td (The project was checked using available Laravel and frontend validation tools.) Tj ET
+BT /F2 12 Tf 54 657 Td (Validation performed:) Tj ET
+BT /F1 11 Tf 54 641 Td (- PHP syntax checks for modified backend files.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Laravel feature and unit test suite executed successfully.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Vite production build executed successfully.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Realtime event flow reviewed and updated.) Tj ET
+BT /F1 11 Tf 54 577 Td (- UI behavior refined for mobile notification dropdowns.) Tj ET
+BT /F1 11 Tf 54 561 Td (- Pagination behavior added to appointment-heavy pages.) Tj ET
+BT /F1 11 Tf 54 535 Td (These checks help confirm that the application remains stable after each improvement.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+40 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 39 0 R >>
+endobj
+41 0 obj
+<< /Length 1057 >>
+stream
+BT /F1 25 Tf 54 714 Td (System Benefits) Tj ET
+BT /F1 11 Tf 54 683 Td (DentalEase provides practical benefits for patients, clinics, and administrators.) Tj ET
+BT /F2 12 Tf 54 657 Td (For patients:) Tj ET
+BT /F1 11 Tf 54 641 Td (- Easier appointment booking.) Tj ET
+BT /F1 11 Tf 54 625 Td (- Clear appointment status visibility.) Tj ET
+BT /F1 11 Tf 54 609 Td (- Realtime updates from clinics.) Tj ET
+BT /F1 11 Tf 54 593 Td (- Access to records and active schedules.) Tj ET
+BT /F2 12 Tf 54 567 Td (For clinics:) Tj ET
+BT /F1 11 Tf 54 551 Td (- Faster awareness of appointment requests.) Tj ET
+BT /F1 11 Tf 54 535 Td (- Better schedule organization.) Tj ET
+BT /F1 11 Tf 54 519 Td (- Easier approval and decline workflow.) Tj ET
+BT /F1 11 Tf 54 503 Td (- Centralized patient activity view.) Tj ET
+BT /F2 12 Tf 54 477 Td (For administrators:) Tj ET
+BT /F1 11 Tf 54 461 Td (- Better account control through verification.) Tj ET
+BT /F1 11 Tf 54 445 Td (- Improved monitoring of platform activity.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+42 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 41 0 R >>
+endobj
+43 0 obj
+<< /Length 1052 >>
+stream
+BT /F1 25 Tf 54 714 Td (Conclusion) Tj ET
+BT /F1 11 Tf 54 683 Td (DentalEase is a complete dental appointment and clinic management system with realtime) Tj ET
+BT /F1 11 Tf 54 667 Td (features, role-based workflows, account verification, responsive user interfaces, and) Tj ET
+BT /F1 11 Tf 54 651 Td (organized appointment handling.) Tj ET
+BT /F1 11 Tf 54 625 Td (The system successfully integrates appointment booking, clinic schedule management,) Tj ET
+BT /F1 11 Tf 54 609 Td (patient records, notifications, and realtime updates using Laravel Reverb.) Tj ET
+BT /F1 11 Tf 54 583 Td (With the implemented mobile UI improvements and pagination, the platform is better) Tj ET
+BT /F1 11 Tf 54 567 Td (prepared for practical use, larger appointment volumes, and smoother patient-clinic) Tj ET
+BT /F1 11 Tf 54 551 Td (communication.) Tj ET
+BT /F1 11 Tf 54 525 Td (DentalEase supports the goal of making dental care more accessible, organized, and) Tj ET
+BT /F1 11 Tf 54 509 Td (responsive.) Tj ET
+BT /F1 9 Tf 54 36 Td (DentalEase System Presentation) Tj ET
+endstream
+endobj
+44 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 43 0 R >>
+endobj
+xref
+0 45
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000248 00000 n 
+0000000318 00000 n 
+0000000393 00000 n 
+0000001142 00000 n 
+0000001278 00000 n 
+0000002216 00000 n 
+0000002352 00000 n 
+0000003378 00000 n 
+0000003515 00000 n 
+0000004716 00000 n 
+0000004854 00000 n 
+0000006145 00000 n 
+0000006283 00000 n 
+0000007419 00000 n 
+0000007557 00000 n 
+0000008585 00000 n 
+0000008723 00000 n 
+0000010041 00000 n 
+0000010179 00000 n 
+0000011375 00000 n 
+0000011513 00000 n 
+0000012622 00000 n 
+0000012760 00000 n 
+0000013825 00000 n 
+0000013963 00000 n 
+0000014853 00000 n 
+0000014991 00000 n 
+0000015958 00000 n 
+0000016096 00000 n 
+0000017014 00000 n 
+0000017152 00000 n 
+0000018243 00000 n 
+0000018381 00000 n 
+0000019478 00000 n 
+0000019616 00000 n 
+0000020647 00000 n 
+0000020785 00000 n 
+0000021729 00000 n 
+0000021867 00000 n 
+0000022977 00000 n 
+0000023115 00000 n 
+0000024220 00000 n 
+trailer
+<< /Size 45 /Root 1 0 R >>
+startxref
+24358
+%%EOF

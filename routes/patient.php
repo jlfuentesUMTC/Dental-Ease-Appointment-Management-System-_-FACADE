@@ -6,7 +6,7 @@ use App\Http\Controllers\VideoConsultationController;
 
 Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient', 'verified.user:patient'])->group(function () {
     Route::get('/dashboard', function () {
-        $appointments = \App\Models\Appointment::where('patient_id', Auth::id())->latestBooked()->get();
+        $appointments = \App\Models\Appointment::with('videoConsultation')->where('patient_id', Auth::id())->latestBooked()->get();
         return view('patient.dashboard', compact('appointments'));
     })->name('dashboard');
     
@@ -14,7 +14,7 @@ Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient', 
     Route::post('/appointments', [AppointmentController::class, 'storePatient'])->name('appointments.store');
     
     Route::get('/records', function () {
-        $appointments = \App\Models\Appointment::where('patient_id', Auth::id())->latestBooked()->get();
+        $appointments = \App\Models\Appointment::with('videoConsultation')->where('patient_id', Auth::id())->latestBooked()->get();
         return view('patient.records', compact('appointments'));
     })->name('records');
     

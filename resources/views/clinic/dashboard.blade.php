@@ -17,7 +17,7 @@
         ->unique()
         ->count();
     $queue = $appointments
-        ->filter(fn($appointment) => $appointment->appointment_date->gte(now()->startOfDay()) && in_array($appointment->status, ['pending', 'confirmed']))
+        ->filter(fn($appointment) => $appointment->appointment_date->gte(now()->startOfDay()) && in_array($appointment->status, ['pending', 'confirmed']) && !($appointment->type === 'Telehealth' && ($appointment->videoHasEnded() || $appointment->videoHasExpired())))
         ->sortBy('appointment_date')
         ->take(3)
         ->values();
@@ -93,7 +93,7 @@
                             <div class="flex items-center gap-6">
                                 <span class="text-slate-600 text-sm font-black uppercase tracking-widest">{{ $appointment->appointment_time ? $appointment->appointment_time->format('h:i A') : 'TBD' }}</span>
                                 <span class="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm {{ $appointment->status === 'confirmed' ? 'bg-cyan-500 text-white shadow-cyan-100' : 'bg-white border border-slate-200 text-slate-400' }}">
-                                    {{ ucfirst($appointment->status) }}
+                                    {{ $appointment->type === 'Telehealth' && ($appointment->videoHasEnded() || $appointment->videoHasExpired()) ? 'Call Finished' : ucfirst($appointment->status) }}
                                 </span>
                             </div>
                         </div>
@@ -115,7 +115,7 @@
                             <div class="w-12 h-12 {{ $index === 0 ? 'bg-cyan-500' : 'bg-slate-900' }} rounded-xl flex items-center justify-center text-white font-black text-lg">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</div>
                             <div>
                                 <div class="text-base font-black text-slate-900 uppercase tracking-tight">{{ $appointment->patient_name }}</div>
-                                <div class="text-[10px] font-black {{ $index === 0 ? 'text-cyan-600' : 'text-slate-400' }} uppercase tracking-widest mt-1">{{ ucfirst($appointment->status) }} - {{ $appointment->appointment_date->format('M j') }}</div>
+                                <div class="text-[10px] font-black {{ $index === 0 ? 'text-cyan-600' : 'text-slate-400' }} uppercase tracking-widest mt-1">{{ $appointment->type === 'Telehealth' && ($appointment->videoHasEnded() || $appointment->videoHasExpired()) ? 'Call Finished' : ucfirst($appointment->status) }} - {{ $appointment->appointment_date->format('M j') }}</div>
                             </div>
                         </div>
                         @empty

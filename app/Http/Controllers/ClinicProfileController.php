@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ClinicProfileController extends Controller
@@ -13,6 +14,7 @@ class ClinicProfileController extends Controller
     public function edit(): View
     {
         abort_unless(Auth::user()?->role === 'clinic', 403);
+        Gate::authorize('managePricing', Auth::user());
 
         return view('clinic.profile', [
             'clinic' => Auth::user(),
@@ -23,6 +25,7 @@ class ClinicProfileController extends Controller
     {
         $clinic = Auth::user();
         abort_unless($clinic?->role === 'clinic', 403);
+        Gate::authorize('managePricing', $clinic);
 
         $validated = $request->validate([
             'clinic_location' => ['nullable', 'string', 'max:255'],
@@ -60,9 +63,17 @@ class ClinicProfileController extends Controller
    
     public function showPricing(): View
     {
-     
-        $registeredClinics = User::where('role', 'clinic')
+        $user = Auth::user();
+
+        $registeredClinics = User::query()
+            ->where('role', 'clinic')
             ->where('verification_status', 'approved')
+            ->when($user?->role === 'clinic', function ($query) use ($user) {
+                Gate::authorize('viewOwnPricing', $user);
+
+                $query->whereKey($user->id);
+            })
+            ->orderBy('name')
             ->get();
 
        

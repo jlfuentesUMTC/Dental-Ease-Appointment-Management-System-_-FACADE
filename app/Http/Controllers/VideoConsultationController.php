@@ -16,6 +16,7 @@ class VideoConsultationController extends Controller
     public function patient(Request $request, ?Appointment $appointment = null): RedirectResponse|View
     {
         $appointment ??= Appointment::query()
+            ->with('videoConsultation')
             ->where('patient_id', $request->user()->id)
             ->where('type', 'Telehealth')
             ->where('status', 'confirmed')
@@ -29,8 +30,15 @@ class VideoConsultationController extends Controller
         }
 
         abort_unless($appointment->patient_id === $request->user()->id, 403);
+        $appointment->loadMissing('videoConsultation');
 
-        if (!$this->patientCanJoin($appointment)) {
+        if (!$appointment->canJoinVideoCall()) {
+            return redirect()
+                ->route('patient.appointments')
+                ->with('status', 'This video consultation is no longer available.');
+        }
+
+        if (!$appointment->patientCanJoinVideoCall()) {
             return redirect()
                 ->route('patient.appointments')
                 ->with('status', 'Please wait until the clinic starts this video consultation.');
@@ -55,13 +63,8 @@ class VideoConsultationController extends Controller
         }
 
         $appointment ??= Appointment::query()
-            ->where(function ($query) use ($request) {
-                $query->where('clinic_id', $request->user()->id)
-                    ->orWhere(function ($legacyQuery) use ($request) {
-                        $legacyQuery->whereNull('clinic_id')
-                            ->where('clinic_name', $request->user()->name);
-                    });
-            })
+            ->with('videoConsultation')
+            ->forClinic($request->user())
             ->where('type', 'Telehealth')
             ->where('status', 'confirmed')
             ->latestBooked()
@@ -74,6 +77,13 @@ class VideoConsultationController extends Controller
         }
 
         abort_unless($this->belongsToClinic($appointment, $request->user()), 403);
+        $appointment->loadMissing('videoConsultation');
+
+        if (!$appointment->canJoinVideoCall()) {
+            return redirect()
+                ->route('clinic.appointments')
+                ->with('status', 'This video consultation is no longer available.');
+        }
 
         $consultation = $this->consultationFor($appointment);
 
@@ -101,7 +111,8 @@ class VideoConsultationController extends Controller
     {
         abort_unless($request->user()->verification_status === 'approved', 403);
         abort_unless($this->belongsToClinic($appointment, $request->user()), 403);
-        abort_unless($appointment->type === 'Telehealth' && $appointment->status === 'confirmed', 403);
+        $appointment->loadMissing('videoConsultation');
+        abort_unless($appointment->canJoinVideoCall(), 403);
 
         $consultation = $this->consultationFor($appointment);
         $updates = [
@@ -120,6 +131,27 @@ class VideoConsultationController extends Controller
         ]);
     }
 
+    public function markClinicEnded(Request $request, Appointment $appointment): JsonResponse
+    {
+        abort_unless($request->user()->verification_status === 'approved', 403);
+        abort_unless($this->belongsToClinic($appointment, $request->user()), 403);
+        abort_unless($appointment->type === 'Telehealth', 403);
+
+        $consultation = $this->consultationFor($appointment);
+        $updates = [
+            'ended_at' => $consultation->ended_at ?: now(),
+        ];
+
+        if (Schema::hasColumn('video_consultations', 'status')) {
+            $updates['status'] = 'ended';
+        }
+
+        $consultation->forceFill($updates)->save();
+        $appointment->forceFill(['status' => 'completed'])->save();
+
+        return response()->json(['ended' => true]);
+    }
+
     private function redirectToMeet(Appointment $appointment): RedirectResponse
     {
         abort_unless($appointment->type === 'Telehealth' && $appointment->status === 'confirmed', 403);
@@ -135,15 +167,6 @@ class VideoConsultationController extends Controller
             'backUrl' => route($role.'.appointments'),
             'role' => $role,
         ]);
-    }
-
-    private function patientCanJoin(Appointment $appointment): bool
-    {
-        $consultation = VideoConsultation::query()
-            ->where('appointment_id', $appointment->id)
-            ->first();
-
-        return (bool) $consultation?->started_at;
     }
 
     private function consultationFor(Appointment $appointment): VideoConsultation
@@ -227,7 +250,6 @@ class VideoConsultationController extends Controller
 
     private function belongsToClinic(Appointment $appointment, $clinic): bool
     {
-        return $appointment->clinic_id === $clinic->id
-            || ($appointment->clinic_id === null && $appointment->clinic_name === $clinic->name);
+        return $appointment->belongsToClinic($clinic);
     }
 }

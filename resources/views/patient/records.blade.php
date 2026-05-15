@@ -57,7 +57,7 @@
 
         <div class="bg-white border-2 border-slate-100 rounded-[2rem] overflow-hidden shadow-sm">
             <div class="flex border-b border-slate-50 bg-slate-50/50 p-1.5 gap-1 overflow-x-auto no-scrollbar">
-                @php $tabs = ['Treatment History','Prescriptions','X-Rays','Treatment Plans']; @endphp
+                @php $tabs = ['Treatment Plans','Treatment History','Prescriptions','X-Rays']; @endphp
                 @foreach($tabs as $i => $tab)
                 <button onclick="switchTab({{ $i }})" id="tab-{{ $i }}"
                     class="flex-shrink-0 px-6 py-3 text-[10px] font-black uppercase tracking-widest transition-all rounded-xl {{ $i === 0 ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600' }}">
@@ -68,6 +68,29 @@
 
             <div class="p-4">
                 <div id="tabContent-0" class="space-y-2">
+                    @forelse($confirmedAppointments as $appointment)
+                    <div class="bg-white border border-slate-100 rounded-2xl p-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <div class="font-black text-slate-900 text-base uppercase tracking-tight mb-1">{{ ucwords(str_replace('-', ' ', $appointment->service)) }}</div>
+                                <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $appointment->clinic_name }} - {{ $appointment->appointment_date->format('F j, Y') }}</div>
+                                @if($appointment->notes)
+                                <p class="mt-2 text-[10px] font-semibold text-slate-500 leading-relaxed normal-case">{{ $appointment->notes }}</p>
+                                @endif
+                            </div>
+                            <span class="{{ $appointment->type === 'Telehealth' ? 'bg-cyan-50 text-cyan-600' : 'bg-emerald-50 text-emerald-600' }} text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg self-start sm:self-center">
+                                {{ $appointment->type }}
+                            </span>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="p-8 bg-slate-50 rounded-2xl text-center text-xs font-black uppercase tracking-widest text-slate-300">
+                        No active treatment plans yet.
+                    </div>
+                    @endforelse
+                </div>
+
+                <div id="tabContent-1" class="hidden space-y-2">
                     @forelse($completedAppointments as $appointment)
                     <div class="bg-white border border-slate-100 rounded-2xl p-4 hover:border-cyan-200 transition-all group">
                         <div class="flex items-center gap-5">
@@ -79,7 +102,11 @@
                                 <div class="flex flex-wrap items-center gap-4 mt-1">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $appointment->appointment_date->format('F j, Y') }}</span>
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $appointment->clinic_name }}</span>
+                                    <span class="{{ $appointment->type === 'Telehealth' ? 'bg-cyan-50 text-cyan-600' : 'bg-emerald-50 text-emerald-600' }} text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg">{{ $appointment->type }}</span>
                                 </div>
+                                @if($appointment->notes)
+                                <p class="mt-2 text-[10px] font-semibold text-slate-500 leading-relaxed normal-case">{{ $appointment->notes }}</p>
+                                @endif
                             </div>
                             <span class="text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg bg-slate-900 text-white">Completed</span>
                         </div>
@@ -91,29 +118,16 @@
                     @endforelse
                 </div>
 
-                <div id="tabContent-1" class="hidden">
+                <div id="tabContent-2" class="hidden">
                     <div class="p-8 bg-slate-50 rounded-2xl text-center text-xs font-black uppercase tracking-widest text-slate-300">
                         No prescriptions recorded yet.
                     </div>
                 </div>
 
-                <div id="tabContent-2" class="hidden">
+                <div id="tabContent-3" class="hidden">
                     <div class="p-8 bg-slate-50 rounded-2xl text-center text-xs font-black uppercase tracking-widest text-slate-300">
                         No X-ray records uploaded yet.
                     </div>
-                </div>
-
-                <div id="tabContent-3" class="hidden space-y-2">
-                    @forelse($confirmedAppointments as $appointment)
-                    <div class="bg-white border border-slate-100 rounded-2xl p-5">
-                        <div class="font-black text-slate-900 text-base uppercase tracking-tight mb-1">{{ ucwords(str_replace('-', ' ', $appointment->service)) }}</div>
-                        <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $appointment->clinic_name }} - {{ $appointment->appointment_date->format('F j, Y') }}</div>
-                    </div>
-                    @empty
-                    <div class="p-8 bg-slate-50 rounded-2xl text-center text-xs font-black uppercase tracking-widest text-slate-300">
-                        No active treatment plans yet.
-                    </div>
-                    @endforelse
                 </div>
             </div>
         </div>

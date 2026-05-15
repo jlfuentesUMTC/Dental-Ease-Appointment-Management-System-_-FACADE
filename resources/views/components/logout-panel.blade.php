@@ -28,7 +28,7 @@
 
         <a href="{{ $signInUrl }}"
            class="block w-full bg-white text-slate-900 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-cyan-500 hover:text-white transition-all shadow-xl active:scale-95">
-            Sign In Again
+            Log In Again
         </a>
 
         <a href="{{ $homeUrl }}"

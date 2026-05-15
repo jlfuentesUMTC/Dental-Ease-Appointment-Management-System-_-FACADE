@@ -61,7 +61,9 @@
     const hideSidebar = document.getElementById('hide-sidebar');
     const showSidebar = document.getElementById('show-sidebar');
     const endedUrl = @json($endedUrl);
+    const markEndedUrl = @json(route('clinic.video-call.ended.store', $appointment));
     let markedStarted = false;
+    let markedEnded = false;
     let redirectedToEnded = false;
 
     function setStatus(text, className) {
@@ -92,9 +94,30 @@
         setStatus('Clinic is moderator. Patients may now join.', 'bg-emerald-500/10 border border-emerald-300/20 text-emerald-100 rounded-2xl p-4 text-xs font-black uppercase tracking-widest');
     }
 
-    function goToEndedCall() {
+    async function markEnded() {
+        if (markedEnded) return;
+        markedEnded = true;
+
+        try {
+            await fetch(markEndedUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': @json(csrf_token()),
+                },
+                body: JSON.stringify({ ended_by: 'clinic' }),
+                keepalive: true,
+            });
+        } catch (error) {
+            markedEnded = false;
+        }
+    }
+
+    async function goToEndedCall() {
         if (redirectedToEnded) return;
         redirectedToEnded = true;
+        await markEnded();
         window.location.href = endedUrl;
     }
 

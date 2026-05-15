@@ -7,6 +7,22 @@
 @php
     $appointmentItems = $appointments instanceof \Illuminate\Contracts\Pagination\Paginator ? $appointments->getCollection() : collect($appointments);
     $appointmentTotal = method_exists($appointments, 'total') ? $appointments->total() : $appointmentItems->count();
+    $appointmentGroups = [
+        'in_clinic' => [
+            'title' => 'In-Clinic Appointments',
+            'type' => 'In-Clinic',
+            'items' => $appointmentItems->where('type', 'In-Clinic')->values(),
+            'count' => $typeCounts['In-Clinic'] ?? $appointmentItems->where('type', 'In-Clinic')->count(),
+            'icon' => 'M3 21h18M5 21V7l8-4v18M19 21V9l-6-2M9 9h1m-1 4h1m-1 4h1m5-8h1m-1 4h1m-1 4h1',
+        ],
+        'telehealth' => [
+            'title' => 'Telehealth Appointments',
+            'type' => 'Telehealth',
+            'items' => $appointmentItems->where('type', 'Telehealth')->values(),
+            'count' => $typeCounts['Telehealth'] ?? $appointmentItems->where('type', 'Telehealth')->count(),
+            'icon' => 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
+        ],
+    ];
 @endphp
 
 <div class="min-h-screen bg-slate-50 relative overflow-hidden">
@@ -60,65 +76,130 @@
         </div>
 
         <div data-realtime-section="clinic-appointments-list">
-            <div class="space-y-2">
-            @forelse($appointmentItems as $apt)
-            <div class="bg-white border border-slate-100 rounded-2xl p-4 hover:border-cyan-200 transition-all group" data-title="{{ strtolower($apt->patient_name . ' ' . $apt->service . ' ' . $apt->clinic_name) }}">
-                <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div class="flex items-center gap-4 flex-1">
-                        <div class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center text-cyan-400 font-black text-lg flex-shrink-0 group-hover:bg-cyan-500 group-hover:text-white transition-colors">
-                            {{ substr($apt->patient_name, 0, 1) }}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+            @foreach($appointmentGroups as $section)
+                @php
+                    $sectionAppointments = $section['items'];
+                    $pendingAppointments = $sectionAppointments->where('status', 'pending')->values();
+                    $confirmedAppointments = $sectionAppointments->where('status', 'confirmed')->values();
+                    $completedAppointments = $sectionAppointments
+                        ->filter(fn ($apt) => $apt->status === 'completed' || ($apt->type === 'Telehealth' && ($apt->videoHasEnded() || $apt->videoHasExpired())))
+                        ->values();
+                    $orderedSectionAppointments = $pendingAppointments
+                        ->concat($confirmedAppointments)
+                        ->concat($sectionAppointments->whereNotIn('status', ['pending', 'confirmed'])->values());
+                    $isTelehealthSection = $section['type'] === 'Telehealth';
+                @endphp
+                <section class="bg-white border border-slate-100 rounded-2xl shadow-sm clinic-appointment-section" data-section-type="{{ strtolower($section['type']) }}">
+                    <div class="{{ $isTelehealthSection ? 'bg-cyan-50/70' : 'bg-emerald-50/70' }} border-b border-slate-100 px-4 py-4 rounded-t-2xl">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isTelehealthSection ? 'bg-cyan-500 text-white' : 'bg-emerald-500 text-white' }}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="{{ $section['icon'] }}"/></svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <h2 class="text-sm font-black uppercase tracking-tight text-slate-900 leading-tight">{{ $section['title'] }}</h2>
+                                    <div class="text-[9px] font-black uppercase tracking-widest {{ $isTelehealthSection ? 'text-cyan-600' : 'text-emerald-600' }}">
+                                        {{ $pendingAppointments->count() }} Pending / {{ $confirmedAppointments->count() }} Confirmed / {{ $completedAppointments->count() }} Completed
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-lg bg-white {{ $isTelehealthSection ? 'text-cyan-600' : 'text-emerald-600' }}">{{ $section['count'] }} Total</span>
                         </div>
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2">
-                                <span class="font-black text-slate-900 text-base uppercase tracking-tight leading-tight">{{ $apt->patient_name }}</span>
-                                @if($apt->type === 'Telehealth')
-                                <span class="bg-cyan-50 text-cyan-600 text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded">Video</span>
+                    </div>
+
+                    <div class="p-3 space-y-3 min-h-[280px]">
+                        @forelse($orderedSectionAppointments as $apt)
+                        @php
+                            $isTelehealth = $apt->type === 'Telehealth';
+                            $clinicLocation = $apt->clinic?->clinic_location;
+                            $statusLabel = $apt->type === 'Telehealth' && ($apt->videoHasEnded() || $apt->videoHasExpired()) ? 'Call Finished' : ucfirst($apt->status);
+                        @endphp
+                        <article class="border border-slate-100 rounded-xl p-4 hover:border-cyan-200 transition-all group clinic-appointment-card" data-title="{{ strtolower($apt->patient_name . ' ' . $apt->service . ' ' . $apt->clinic_name . ' ' . $apt->type . ' ' . $apt->status . ' ' . ($clinicLocation ?? '')) }}">
+                            <div class="flex items-start gap-3">
+                                <div class="w-11 h-11 bg-slate-900 rounded-xl flex items-center justify-center text-cyan-400 font-black text-base flex-shrink-0 group-hover:bg-cyan-500 group-hover:text-white transition-colors">
+                                    {{ substr($apt->patient_name, 0, 1) }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h3 class="font-black text-slate-900 text-base uppercase tracking-tight leading-tight">{{ $apt->patient_name }}</h3>
+                                        <span class="{{ $isTelehealth ? 'bg-cyan-50 text-cyan-600' : 'bg-emerald-50 text-emerald-600' }} text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="{{ $section['icon'] }}"/></svg>
+                                            {{ $apt->type }}
+                                        </span>
+                                    </div>
+                                    <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                        <div>{{ ucwords(str_replace('-', ' ', $apt->service)) }}</div>
+                                        <div>{{ $apt->appointment_date->format('M j, Y') }}</div>
+                                        <div>{{ $apt->appointment_time ? $apt->appointment_time->format('h:i A') : 'TBD' }}</div>
+                                        <div>{{ $apt->clinic_name }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if($apt->notes)
+                            <div class="mt-3 bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-[10px] font-semibold text-slate-500 leading-relaxed">
+                                <span class="block text-[8px] font-black uppercase tracking-widest text-slate-300 mb-1">Additional Notes / Concerns</span>
+                                {{ $apt->notes }}
+                            </div>
+                            @endif
+
+                            @if(!$isTelehealth)
+                            <div class="mt-3 bg-emerald-50/70 border border-emerald-100 rounded-xl px-4 py-3 text-[10px] font-semibold text-emerald-700 leading-relaxed">
+                                <span class="block text-[8px] font-black uppercase tracking-widest text-emerald-500 mb-1">Clinic Location</span>
+                                {{ $clinicLocation ?: 'Clinic address not provided' }}
+                            </div>
+                            @endif
+
+                            <div class="mt-4 flex flex-wrap items-center gap-2">
+                                @if($apt->status === 'confirmed' && $apt->type === 'Telehealth')
+                                    @if($apt->canJoinVideoCall())
+                                    <a href="{{ route('clinic.video-call', $apt) }}" class="flex items-center gap-2 bg-slate-900 text-white hover:bg-cyan-600 text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all shadow-sm">
+                                        Start Call
+                                    </a>
+                                    @else
+                                    <button disabled class="flex items-center gap-2 bg-slate-100 text-slate-400 text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg cursor-not-allowed">
+                                        Call Finished
+                                    </button>
+                                    @endif
+                                @elseif($apt->status === 'pending')
+                                    <form action="{{ route('clinic.appointments.decline', $apt) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all">
+                                            Decline
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('clinic.appointments.approve', $apt) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="bg-cyan-500 hover:bg-cyan-600 text-white text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all">
+                                            Approve
+                                        </button>
+                                    </form>
                                 @endif
+
+                                <span class="text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg
+                                    {{ $apt->status == 'completed' ? 'bg-slate-100 text-slate-400' : 'bg-slate-50 text-slate-600' }}">
+                                    {{ $statusLabel }}
+                                </span>
                             </div>
-                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ ucwords(str_replace('-', ' ', $apt->service)) }}</span>
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $apt->appointment_date->format('M j, Y') }}</span>
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $apt->appointment_time ? $apt->appointment_time->format('h:i A') : 'TBD' }}</span>
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $apt->clinic_name }}</span>
-                            </div>
+                        </article>
+                        @empty
+                        <div class="border border-dashed border-slate-200 rounded-xl p-8 text-center text-[10px] font-black uppercase tracking-widest text-slate-300">
+                            No {{ strtolower($section['type']) }} appointments on this page.
                         </div>
+                        @endforelse
                     </div>
-
-                    <div class="flex items-center gap-2 ml-16 sm:ml-0">
-                        @if($apt->status === 'confirmed' && $apt->type === 'Telehealth')
-                            <a href="{{ route('clinic.video-call', $apt) }}" class="flex items-center gap-2 bg-slate-900 text-white hover:bg-cyan-600 text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all shadow-sm">
-                                Start Call
-                            </a>
-                        @elseif($apt->status === 'pending')
-                            <form action="{{ route('clinic.appointments.decline', $apt) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-                                <button class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all">
-                                    Decline
-                                </button>
-                            </form>
-                            <form action="{{ route('clinic.appointments.approve', $apt) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-                                <button class="bg-cyan-500 hover:bg-cyan-600 text-white text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg transition-all">
-                                    Approve
-                                </button>
-                            </form>
-                        @endif
-
-                        <span class="text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-lg
-                            {{ $apt->status == 'completed' ? 'bg-slate-100 text-slate-400' : 'bg-slate-50 text-slate-600' }}">
-                            {{ ucfirst($apt->status) }}
-                        </span>
-                    </div>
-                </div>
+                </section>
+            @endforeach
             </div>
-            @empty
-            <div class="bg-white border border-slate-100 rounded-2xl p-8 text-center text-xs font-black uppercase tracking-widest text-slate-300">
+
+            @if($appointmentItems->isEmpty())
+            <div class="mt-4 bg-white border border-slate-100 rounded-2xl p-8 text-center text-xs font-black uppercase tracking-widest text-slate-300">
                 No appointment requests yet.
             </div>
-            @endforelse
-            </div>
+            @endif
 
             @if($appointments instanceof \Illuminate\Contracts\Pagination\Paginator && $appointments->hasPages())
             <div class="mt-6">
@@ -135,6 +216,11 @@
         const q = query.toLowerCase();
         document.querySelectorAll('[data-title]').forEach(card => {
             card.style.display = card.dataset.title.includes(q) ? '' : 'none';
+        });
+        document.querySelectorAll('.clinic-appointment-section').forEach(section => {
+            const cards = section.querySelectorAll('.clinic-appointment-card');
+            const hasVisibleCard = Array.from(cards).some(card => card.style.display !== 'none');
+            section.style.display = hasVisibleCard || !q ? '' : 'none';
         });
     }
 </script>

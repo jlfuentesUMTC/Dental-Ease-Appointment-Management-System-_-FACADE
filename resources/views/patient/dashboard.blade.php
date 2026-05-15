@@ -8,7 +8,7 @@
     $user = Auth::user();
     $today = now()->startOfDay();
     $upcomingAppointments = $appointments
-        ->filter(fn($appointment) => $appointment->appointment_date->gte($today) && $appointment->status !== 'completed')
+        ->filter(fn($appointment) => $appointment->appointment_date->gte($today) && $appointment->status !== 'completed' && !($appointment->type === 'Telehealth' && ($appointment->videoHasEnded() || $appointment->videoHasExpired())))
         ->sortBy('appointment_date')
         ->values();
     $completedAppointments = $appointments->where('status', 'completed')->values();
@@ -90,7 +90,7 @@
                             </div>
                             <div class="flex items-center">
                                 <span class="{{ $appointment->status === 'confirmed' ? 'bg-cyan-500' : 'bg-slate-300' }} text-white text-xs font-black uppercase tracking-[0.2em] px-8 py-4 rounded-xl shadow-lg shadow-cyan-100/50">
-                                    {{ $appointment->status === 'confirmed' ? 'Waiting for Clinic' : ucfirst($appointment->status) }}
+                                    {{ $appointment->type === 'Telehealth' && ($appointment->videoHasEnded() || $appointment->videoHasExpired()) ? 'Call Finished' : ($appointment->status === 'confirmed' ? 'Waiting for Clinic' : ucfirst($appointment->status)) }}
                                 </span>
                             </div>
                         </div>
@@ -113,7 +113,7 @@
                         <div class="w-14 h-14 bg-cyan-500 rounded-xl flex items-center justify-center text-white font-black text-xl">01</div>
                         <div>
                             <div class="text-base font-black text-slate-900 uppercase tracking-tight">{{ ucwords(str_replace('-', ' ', $nextAppointment->service)) }}</div>
-                            <div class="text-xs font-black text-cyan-600 uppercase tracking-widest mt-1">{{ $nextAppointment->status === 'confirmed' ? 'Waiting for Clinic' : ucfirst($nextAppointment->status) }} - {{ $nextAppointment->appointment_date->format('M j') }}</div>
+                            <div class="text-xs font-black text-cyan-600 uppercase tracking-widest mt-1">{{ $nextAppointment->type === 'Telehealth' && ($nextAppointment->videoHasEnded() || $nextAppointment->videoHasExpired()) ? 'Call Finished' : ($nextAppointment->status === 'confirmed' ? 'Waiting for Clinic' : ucfirst($nextAppointment->status)) }} - {{ $nextAppointment->appointment_date->format('M j') }}</div>
                         </div>
                     </div>
                     @else
