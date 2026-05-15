@@ -137,17 +137,17 @@ class VideoConsultationController extends Controller
         abort_unless($this->belongsToClinic($appointment, $request->user()), 403);
         abort_unless($appointment->type === 'Telehealth', 403);
 
-        $consultation = $this->consultationFor($appointment);
-        $updates = [
-            'ended_at' => $consultation->ended_at ?: now(),
-        ];
+        $this->finishVideoConsultation($appointment);
 
-        if (Schema::hasColumn('video_consultations', 'status')) {
-            $updates['status'] = 'ended';
-        }
+        return response()->json(['ended' => true]);
+    }
 
-        $consultation->forceFill($updates)->save();
-        $appointment->forceFill(['status' => 'completed'])->save();
+    public function markPatientEnded(Request $request, Appointment $appointment): JsonResponse
+    {
+        abort_unless($appointment->patient_id === $request->user()->id, 403);
+        abort_unless($appointment->type === 'Telehealth', 403);
+
+        $this->finishVideoConsultation($appointment);
 
         return response()->json(['ended' => true]);
     }
@@ -167,6 +167,21 @@ class VideoConsultationController extends Controller
             'backUrl' => route($role.'.appointments'),
             'role' => $role,
         ]);
+    }
+
+    private function finishVideoConsultation(Appointment $appointment): void
+    {
+        $consultation = $this->consultationFor($appointment);
+        $updates = [
+            'ended_at' => $consultation->ended_at ?: now(),
+        ];
+
+        if (Schema::hasColumn('video_consultations', 'status')) {
+            $updates['status'] = 'ended';
+        }
+
+        $consultation->forceFill($updates)->save();
+        $appointment->forceFill(['status' => 'completed'])->save();
     }
 
     private function consultationFor(Appointment $appointment): VideoConsultation

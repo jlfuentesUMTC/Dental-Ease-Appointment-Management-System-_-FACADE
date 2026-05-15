@@ -19,5 +19,6 @@ Route::prefix('patient')->name('patient.')->middleware(['auth', 'role:patient', 
     })->name('records');
     
     Route::get('/video-call/{appointment?}', [VideoConsultationController::class, 'patient'])->name('video-call');
+    Route::post('/video-call/{appointment}/ended', [VideoConsultationController::class, 'markPatientEnded'])->name('video-call.ended.store');
     Route::get('/video-call-ended', [VideoConsultationController::class, 'patientEnded'])->name('video-call.ended');
 });
